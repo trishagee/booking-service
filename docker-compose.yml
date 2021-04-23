@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8.0.24
+    environment:
+      - MYSQL_ROOT_PASSWORD=supersecurepassword
+      - MYSQL_DATABASE=booking_service_db
+      - MYSQL_USER=app-user
+      - MYSQL_PASSWORD=app-password
+    ports:
+      - 3306:3306
+  booking-service:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
