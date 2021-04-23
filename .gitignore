@@ -1,0 +1,6 @@
+HELP.md
+.gradle
+build/
+
+### IntelliJ IDEA ###
+out/
