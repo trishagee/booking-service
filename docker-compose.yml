@@ -13,5 +13,7 @@ services:
     build: .
     ports:
       - "8080:8080"
+    environment:
+      - spring.datasource.url=jdbc:mysql://mysql/booking_service_db
     depends_on:
       - mysql
