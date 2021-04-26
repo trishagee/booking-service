@@ -1,14 +1,11 @@
 package com.jetbrains.bookingservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.repository.Repository;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -18,7 +15,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -37,7 +33,7 @@ public class BookingServiceIntegrationTest {
     @DisplayName("Should be able to create a simple booking")
     void shouldBeAbleToCreateASimpleBooking() throws Exception {
         //client selects a restaurant with an id and passes the id, date and time, number of diners, indoor vs outdoor
-        Booking booking = new Booking("7", LocalDateTime.now(), 4, Area.INDOOR);
+        Booking booking = new Booking("7", LocalDateTime.now(), 4);
 
         // when
         MvcResult mvcResult = mockMvc.perform(post("/bookings")
@@ -55,7 +51,12 @@ public class BookingServiceIntegrationTest {
         // consider moving this into a helper method
         assertEquals(booking.getRestaurantId(), actualBooking.getRestaurantId());
         assertEquals(booking.getDateTime(), actualBooking.getDateTime());
-        assertEquals(booking.getArea(), actualBooking.getArea());
         assertEquals(booking.getNumberOfDiners(), actualBooking.getNumberOfDiners());
     }
+
+
+    // check restaurant capacity
+    //  -  on that date
+    //  -  for that capacity
+    //  -  indoors vs outdoors
 }

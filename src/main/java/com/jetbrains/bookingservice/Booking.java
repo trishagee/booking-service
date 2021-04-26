@@ -13,17 +13,15 @@ public class Booking {
     private String restaurantId;
     private LocalDateTime dateTime;
     private int numberOfDiners;
-    private Area area;
 
     public Booking() {
 
     }
 
-    public Booking(final String restaurantId, final LocalDateTime dateTime, final int numberOfDiners, final Area area) {
+    public Booking(final String restaurantId, final LocalDateTime dateTime, final int numberOfDiners) {
         this.restaurantId = restaurantId;
         this.dateTime = dateTime;
         this.numberOfDiners = numberOfDiners;
-        this.area = area;
     }
 
     public String getRestaurantId() {
@@ -36,10 +34,6 @@ public class Booking {
 
     public int getNumberOfDiners() {
         return numberOfDiners;
-    }
-
-    public Area getArea() {
-        return area;
     }
 
     public Long getId() {
@@ -56,8 +50,7 @@ public class Booking {
         if (id != booking.id) return false;
         if (numberOfDiners != booking.numberOfDiners) return false;
         if (!restaurantId.equals(booking.restaurantId)) return false;
-        if (!dateTime.equals(booking.dateTime)) return false;
-        return area == booking.area;
+        return dateTime.equals(booking.dateTime);
     }
 
     @Override
@@ -66,7 +59,6 @@ public class Booking {
         result = 31 * result + restaurantId.hashCode();
         result = 31 * result + dateTime.hashCode();
         result = 31 * result + numberOfDiners;
-        result = 31 * result + (area != null ? area.hashCode() : 0);
         return result;
     }
 
@@ -77,7 +69,6 @@ public class Booking {
         sb.append(", restaurantId='").append(restaurantId).append('\'');
         sb.append(", dateTime=").append(dateTime);
         sb.append(", numberOfDiners=").append(numberOfDiners);
-        sb.append(", area=").append(area);
         sb.append('}');
         return sb.toString();
     }
