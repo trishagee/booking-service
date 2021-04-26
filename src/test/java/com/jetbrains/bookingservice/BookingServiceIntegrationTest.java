@@ -10,11 +10,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.repository.Repository;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -31,7 +33,6 @@ public class BookingServiceIntegrationTest {
 
     @Test
     @DisplayName("Should be able to create a simple booking")
-    @Disabled("Not implemented yet")
     void shouldBeAbleToCreateASimpleBooking() throws Exception {
         //client selects a restaurant with an id and passes the id, date and time, number of diners, indoor vs outdoor
         String restaurantId = "7";
@@ -39,14 +40,22 @@ public class BookingServiceIntegrationTest {
         Booking booking = new Booking(restaurantId, dateTime, 4, Area.INDOOR);
 
         // when
-        mockMvc.perform(post("/bookings")
-                                .contentType("application/json")
-                                .content(objectMapper.writeValueAsString(booking)))
-               .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(post("/bookings")
+                                                      .contentType("application/json")
+                                                      .content(objectMapper.writeValueAsString(booking)))
+                                     .andExpect(status().isOk())
+                                     .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        Booking booking1 = objectMapper.readValue(body, Booking.class);
 
         // then
-        Optional<Booking> actualBooking = bookingRepository.findById(booking.getId());
+        Optional<Booking> actualBooking = bookingRepository.findById(booking1.getId());
         Assertions.assertTrue(actualBooking.isPresent());
-        Assertions.assertEquals(booking, actualBooking.get());
+        Booking actual = actualBooking.get();
+        // consider moving this into a helper method
+        Assertions.assertEquals(booking.getRestaurantId(), actual.getRestaurantId());
+        Assertions.assertEquals(booking.getDateTime(), actual.getDateTime());
+        Assertions.assertEquals(booking.getArea(), actual.getArea());
+        Assertions.assertEquals(booking.getNumberOfDiners(), actual.getNumberOfDiners());
     }
 }
