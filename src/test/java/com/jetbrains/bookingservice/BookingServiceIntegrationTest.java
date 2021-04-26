@@ -15,6 +15,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,9 +37,7 @@ public class BookingServiceIntegrationTest {
     @DisplayName("Should be able to create a simple booking")
     void shouldBeAbleToCreateASimpleBooking() throws Exception {
         //client selects a restaurant with an id and passes the id, date and time, number of diners, indoor vs outdoor
-        String restaurantId = "7";
-        LocalDateTime dateTime = LocalDateTime.now();
-        Booking booking = new Booking(restaurantId, dateTime, 4, Area.INDOOR);
+        Booking booking = new Booking("7", LocalDateTime.now(), 4, Area.INDOOR);
 
         // when
         MvcResult mvcResult = mockMvc.perform(post("/bookings")
@@ -45,17 +45,17 @@ public class BookingServiceIntegrationTest {
                                                       .content(objectMapper.writeValueAsString(booking)))
                                      .andExpect(status().isOk())
                                      .andReturn();
-        String body = mvcResult.getResponse().getContentAsString();
-        Booking booking1 = objectMapper.readValue(body, Booking.class);
+        Booking returnedBooking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Booking.class);
 
         // then
-        Optional<Booking> actualBooking = bookingRepository.findById(booking1.getId());
-        Assertions.assertTrue(actualBooking.isPresent());
-        Booking actual = actualBooking.get();
+        Optional<Booking> bookingById = bookingRepository.findById(returnedBooking.getId());
+        assertTrue(bookingById.isPresent());
+
+        Booking actualBooking = bookingById.get();
         // consider moving this into a helper method
-        Assertions.assertEquals(booking.getRestaurantId(), actual.getRestaurantId());
-        Assertions.assertEquals(booking.getDateTime(), actual.getDateTime());
-        Assertions.assertEquals(booking.getArea(), actual.getArea());
-        Assertions.assertEquals(booking.getNumberOfDiners(), actual.getNumberOfDiners());
+        assertEquals(booking.getRestaurantId(), actualBooking.getRestaurantId());
+        assertEquals(booking.getDateTime(), actualBooking.getDateTime());
+        assertEquals(booking.getArea(), actualBooking.getArea());
+        assertEquals(booking.getNumberOfDiners(), actualBooking.getNumberOfDiners());
     }
 }
