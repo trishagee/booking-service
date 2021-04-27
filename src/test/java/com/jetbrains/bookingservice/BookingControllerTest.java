@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -26,7 +27,7 @@ class BookingControllerTest {
         String restaurantId = "3";
         // stub the restaurant, because otherwise all the other logic will fall over.
         Mockito.when(restTemplate.getForObject("http://localhost:8080/restaurants/" + restaurantId, Restaurant.class))
-               .thenReturn(new Restaurant(restaurantId, 643728));
+               .thenReturn(new Restaurant(restaurantId, 643728, Set.of()));
 
         // when
         Booking newBooking = new Booking(restaurantId, LocalDateTime.now(), 10);
@@ -44,7 +45,7 @@ class BookingControllerTest {
         BookingController bookingController = new BookingController(repository);
         // stub
         Mockito.when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
-               .thenReturn(new Restaurant("2", 5));
+               .thenReturn(new Restaurant("2", 5, Set.of()));
 
         // expect
         Booking newBooking = new Booking("1", LocalDateTime.now(), 10);
