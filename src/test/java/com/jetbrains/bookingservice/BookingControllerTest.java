@@ -1,6 +1,5 @@
 package com.jetbrains.bookingservice;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,5 +51,30 @@ class BookingControllerTest {
         assertAll(() -> assertThrows(NoAvailableCapacityException.class,
                                      () -> bookingController.createBooking(newBooking, restTemplate)),
                   () -> verifyNoInteractions(repository));
+    }
+
+    @Test
+    @DisplayName("Should not allow a booking with more diners than availability for that day")
+    @Disabled("Not implemented yet")
+    void shouldNotAllowABookingWithMoreDinersThanAvailabilityForThatDay() {
+        // for now, we're not going to worry about time / time slots, we going to do the stupidest thing and look at capacity for the whole day
+        fail("Not implemented");
+    }
+
+    @Test
+    @DisplayName("Should save a booking if the number of diners is fewer than the available capacity for the day")
+    @Disabled("Not implemented yet")
+    void shouldSaveABookingIfTheNumberOfDinersIsFewerThanTheAvailableCapacityForTheDay() {
+        // for now, we're not going to worry about time / time slots, we going to do the stupidest thing and look at capacity for the whole day
+
+        fail("Not implemented");
+    }
+
+    @Test
+    @DisplayName("Should not allow a booking on a day the restaurant is shut")
+    @Disabled("Not implemented yet")
+    void shouldNotAllowABookingOnADayTheRestaurantIsShut() {
+        // TODO: we haven't done anything around opening hours / days here yet
+        fail("Not implemented");
     }
 }
