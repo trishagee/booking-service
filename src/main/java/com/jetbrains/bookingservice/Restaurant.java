@@ -1,5 +1,8 @@
 package com.jetbrains.bookingservice;
 
-public record Restaurant(String id, String name, int capacity) {
+import java.time.DayOfWeek;
+import java.util.Set;
+
+public record Restaurant(String id, int capacity, Set<DayOfWeek> openingDay) {
 
 }
