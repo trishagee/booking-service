@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -32,7 +32,7 @@ class BookingControllerTest {
                .thenReturn(new Restaurant("2", 5, Set.of()));
 
         // expect
-        Booking newBooking = new Booking("1", LocalDateTime.now(), 10);
+        Booking newBooking = new Booking("1", LocalDate.now(), 10);
         assertAll(() -> assertThrows(NoAvailableCapacityException.class,
                                      () -> bookingController.createBooking(newBooking, restTemplate)),
                   () -> verifyNoInteractions(repository));
@@ -46,7 +46,7 @@ class BookingControllerTest {
         BookingController bookingController = new BookingController(repository);
 
 
-        Booking newBooking = new Booking("1", LocalDateTime.now(), 5647);
+        Booking newBooking = new Booking("1", LocalDate.now(), 5647);
 
         assertAll(() -> assertThrows(RestaurantNotFoundException.class,
                                      () -> bookingController.createBooking(newBooking, restTemplate)),
@@ -62,8 +62,8 @@ class BookingControllerTest {
         Mockito.when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
                .thenReturn(new Restaurant("99", 20, Set.of(MONDAY, TUESDAY)));
 
-        LocalDateTime bookingDateTime = LocalDateTime.of(2021, 4, 25, 18, 0);
-        Booking newBooking = new Booking("99", bookingDateTime, 10);
+        LocalDate bookingDate = LocalDate.of(2021, 4, 25);
+        Booking newBooking = new Booking("99", bookingDate, 10);
 
         // expect:
         assertAll(() -> assertThrows(RestaurantClosedException.class,
@@ -81,13 +81,13 @@ class BookingControllerTest {
         String restaurantId = "101";
         Mockito.when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
                .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
-        LocalDateTime bookingDateTime = LocalDateTime.of(2021, 4, 26, 18, 0);
-        Booking newBooking = new Booking(restaurantId, bookingDateTime, 4);
+        LocalDate bookingDate = LocalDate.of(2021, 4, 26);
+        Booking newBooking = new Booking(restaurantId, bookingDate, 4);
 
-        List<Booking> bookingList = List.of(new Booking(restaurantId, LocalDateTime.of(2021, 4, 26, 6, 0), 10),
-                                            new Booking(restaurantId, LocalDateTime.of(2021, 4, 26, 11, 0), 7));
+        List<Booking> bookingList = List.of(new Booking(restaurantId, LocalDate.of(2021, 4, 26), 10),
+                                            new Booking(restaurantId, LocalDate.of(2021, 4, 26), 7));
         // stub the response from the repository
-        Mockito.when(repository.findAllByRestaurantIdAndDateTime(restaurantId, bookingDateTime))
+        Mockito.when(repository.findAllByRestaurantIdAndDate(restaurantId, bookingDate))
                .thenReturn(bookingList);
 
         // expect:
@@ -105,13 +105,13 @@ class BookingControllerTest {
         String restaurantId = "101";
         Mockito.when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
                .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
-        LocalDateTime bookingDateTime = LocalDateTime.of(2021, 4, 26, 18, 0);
-        Booking newBooking = new Booking(restaurantId, bookingDateTime, 4);
+        LocalDate bookingDate = LocalDate.of(2021, 4, 26);
+        Booking newBooking = new Booking(restaurantId, bookingDate, 4);
 
-        List<Booking> bookingList = List.of(new Booking(restaurantId, LocalDateTime.of(2021, 4, 26, 6, 0), 8),
-                                            new Booking(restaurantId, LocalDateTime.of(2021, 4, 26, 11, 0), 7));
+        List<Booking> bookingList = List.of(new Booking(restaurantId, LocalDate.of(2021, 4, 26), 8),
+                                            new Booking(restaurantId, LocalDate.of(2021, 4, 26), 7));
         // stub the response from the repository
-        Mockito.when(repository.findAllByRestaurantIdAndDateTime(restaurantId, bookingDateTime))
+        Mockito.when(repository.findAllByRestaurantIdAndDate(restaurantId, bookingDate))
                .thenReturn(bookingList);
 
         // when:

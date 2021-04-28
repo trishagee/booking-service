@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @RestController
 public class BookingController {
 
@@ -34,11 +36,12 @@ public class BookingController {
             throw new NoAvailableCapacityException("Number of diners exceeds available restaurant capacity");
         }
 
-        if (!restaurant.openingDays().contains(booking.getDateTime().getDayOfWeek())) {
-            throw new RestaurantClosedException("Restaurant is not open on: " + booking.getDateTime());
+        if (!restaurant.openingDays().contains(booking.getDate().getDayOfWeek())) {
+            throw new RestaurantClosedException("Restaurant is not open on: " + booking.getDate());
         }
 
-        int totalDinersOnThisDay = repository.findAllByRestaurantIdAndDateTime(booking.getRestaurantId(), booking.getDateTime())
+        List<Booking> allByRestaurantIdAndDate = repository.findAllByRestaurantIdAndDate(booking.getRestaurantId(), booking.getDate());
+        int totalDinersOnThisDay = allByRestaurantIdAndDate
                                              .stream().mapToInt(Booking::getNumberOfDiners).sum();
         if (totalDinersOnThisDay + booking.getNumberOfDiners() > restaurant.capacity()) {
             throw new NoAvailableCapacityException("Restaurant all booked up!");
