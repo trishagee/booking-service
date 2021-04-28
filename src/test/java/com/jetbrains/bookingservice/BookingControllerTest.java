@@ -1,6 +1,5 @@
 package com.jetbrains.bookingservice;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 import static java.time.DayOfWeek.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -79,16 +79,16 @@ class BookingControllerTest {
         // given:
         BookingController bookingController = new BookingController(repository);
         String restaurantId = "101";
-        when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
-                .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
+        Mockito.when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
+               .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
         LocalDateTime bookingDateTime = LocalDateTime.of(2021, 4, 26, 18, 0);
         Booking newBooking = new Booking(restaurantId, bookingDateTime, 4);
 
         List<Booking> bookingList = List.of(new Booking(restaurantId, LocalDateTime.of(2021, 4, 26, 6, 0), 10),
                                             new Booking(restaurantId, LocalDateTime.of(2021, 4, 26, 11, 0), 7));
         // stub the response from the repository
-        when(repository.findAllByRestaurantIdAndDateTime(restaurantId, bookingDateTime))
-                .thenReturn(bookingList);
+        Mockito.when(repository.findAllByRestaurantIdAndDateTime(restaurantId, bookingDateTime))
+               .thenReturn(bookingList);
 
         // expect:
         assertAll(() -> assertThrows(NoAvailableCapacityException.class,
@@ -103,16 +103,16 @@ class BookingControllerTest {
         // for now, we're not going to worry about time / time slots, we going to do the stupidest thing and look at capacity for the whole day
         BookingController bookingController = new BookingController(repository);
         String restaurantId = "101";
-        when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
-                .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
+        Mockito.when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
+               .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
         LocalDateTime bookingDateTime = LocalDateTime.of(2021, 4, 26, 18, 0);
         Booking newBooking = new Booking(restaurantId, bookingDateTime, 4);
 
         List<Booking> bookingList = List.of(new Booking(restaurantId, LocalDateTime.of(2021, 4, 26, 6, 0), 8),
                                             new Booking(restaurantId, LocalDateTime.of(2021, 4, 26, 11, 0), 7));
         // stub the response from the repository
-        when(repository.findAllByRestaurantIdAndDateTime(restaurantId, bookingDateTime))
-                .thenReturn(bookingList);
+        Mockito.when(repository.findAllByRestaurantIdAndDateTime(restaurantId, bookingDateTime))
+               .thenReturn(bookingList);
 
         // when:
         bookingController.createBooking(newBooking, restTemplate);
