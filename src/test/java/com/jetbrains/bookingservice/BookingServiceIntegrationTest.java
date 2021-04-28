@@ -33,7 +33,8 @@ public class BookingServiceIntegrationTest {
     @DisplayName("Should be able to create a simple booking")
     void shouldBeAbleToCreateASimpleBooking() throws Exception {
         //client selects a restaurant with an id and passes the id, date and time, number of diners, indoor vs outdoor
-        Booking booking = new Booking("7", LocalDateTime.now(), 4);
+        LocalDateTime now = LocalDateTime.of(2021, 4, 26, 12, 0);
+        Booking booking = new Booking("1", now, 4);
 
         // when
         MvcResult mvcResult = mockMvc.perform(post("/bookings")
