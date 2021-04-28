@@ -24,13 +24,21 @@ public class BookingController {
     @PostMapping("/bookings")
     public Booking createBooking(@RequestBody Booking booking, RestTemplate restTemplate) {
         // In a "real" environment this would at the very least be a property/environment variable, but ideally something like Service Discovery like Eureka
-        Restaurant restaurant = restTemplate.getForObject("http://localhost:8080/restaurants/"+booking.getRestaurantId(), Restaurant.class);
+        Restaurant restaurant = restTemplate.getForObject("http://localhost:8080/restaurants/" + booking.getRestaurantId(), Restaurant.class);
+
+        if (restaurant == null) {
+            throw new RestaurantNotFoundException(booking.getRestaurantId());
+        }
 
         if (restaurant.capacity() < booking.getNumberOfDiners()) {
             throw new NoAvailableCapacityException("Number of diners exceeds available restaurant capacity");
-        } else {
-            return repository.save(booking);
         }
+
+        if (!restaurant.openingDays().contains(booking.getDateTime().getDayOfWeek())) {
+            throw new RestaurantClosedException("Restaurant is not open on: " + booking.getDateTime());
+        }
+
+        return repository.save(booking);
 
     }
 
