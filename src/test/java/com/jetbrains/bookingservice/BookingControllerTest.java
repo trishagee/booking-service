@@ -80,7 +80,7 @@ class BookingControllerTest {
         BookingController bookingController = new BookingController(repository);
         String restaurantId = "101";
         when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
-               .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
+                .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
         LocalDateTime bookingDateTime = LocalDateTime.of(2021, 4, 26, 18, 0);
         Booking newBooking = new Booking(restaurantId, bookingDateTime, 4);
 
@@ -98,13 +98,26 @@ class BookingControllerTest {
 
     @Test
     @DisplayName("Should save a booking if the number of diners is fewer than the available capacity for the day")
-    @Disabled("Not implemented yet")
-    void shouldSaveABookingIfTheNumberOfDinersIsFewerThanTheAvailableCapacityForTheDay() {
+    void shouldSaveABookingIfTheNumberOfDinersIsFewerThanTheAvailableCapacityForTheDay(@Mock BookingRepository repository,
+                                                                                       @Mock RestTemplate restTemplate) {
         // for now, we're not going to worry about time / time slots, we going to do the stupidest thing and look at capacity for the whole day
-        // restaurant capacity: 20
-        // number of diners: 4
-        // existing bookings on that day: 15
+        BookingController bookingController = new BookingController(repository);
+        String restaurantId = "101";
+        when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
+                .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
+        LocalDateTime bookingDateTime = LocalDateTime.of(2021, 4, 26, 18, 0);
+        Booking newBooking = new Booking(restaurantId, bookingDateTime, 4);
 
-        fail("Not implemented");
+        List<Booking> bookingList = List.of(new Booking(restaurantId, LocalDateTime.of(2021, 4, 26, 6, 0), 8),
+                                            new Booking(restaurantId, LocalDateTime.of(2021, 4, 26, 11, 0), 7));
+        // stub the response from the repository
+        when(repository.findAllByRestaurantIdAndDateTime(restaurantId, bookingDateTime))
+                .thenReturn(bookingList);
+
+        // when:
+        bookingController.createBooking(newBooking, restTemplate);
+
+        // expect:
+        verify(repository).save(newBooking);
     }
 }

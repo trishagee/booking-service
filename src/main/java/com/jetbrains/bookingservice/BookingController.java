@@ -47,7 +47,6 @@ public class BookingController {
         }
 
         return repository.save(booking);
-
     }
 
 }
