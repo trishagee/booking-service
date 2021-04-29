@@ -11,6 +11,9 @@ public class Booking {
     @GeneratedValue
     private long id;
     private String restaurantId;
+    /**
+     * For now, the booking service is overly simple, and we can only book for a date, and not a specific time.
+     */
     private LocalDate date;
     private int numberOfDiners;
 
