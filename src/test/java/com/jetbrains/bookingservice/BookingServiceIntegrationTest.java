@@ -48,11 +48,7 @@ public class BookingServiceIntegrationTest {
         Optional<Booking> bookingById = bookingRepository.findById(returnedBooking.getId());
         assertTrue(bookingById.isPresent());
 
-        Booking actualBooking = bookingById.get();
-        // consider moving this into a helper method
-        assertEquals(booking.getRestaurantId(), actualBooking.getRestaurantId());
-        assertEquals(booking.getDate(), actualBooking.getDate());
-        assertEquals(booking.getNumberOfDiners(), actualBooking.getNumberOfDiners());
+        assertActualVsExpectedBooking(booking, bookingById.get());
     }
 
     @Test
@@ -97,11 +93,7 @@ public class BookingServiceIntegrationTest {
         Optional<Booking> bookingById = bookingRepository.findById(returnedBooking.getId());
         assertTrue(bookingById.isPresent());
 
-        Booking actualBooking = bookingById.get();
-        // consider moving this into a helper method
-        assertEquals(booking.getRestaurantId(), actualBooking.getRestaurantId());
-        assertEquals(booking.getDate(), actualBooking.getDate());
-        assertEquals(booking.getNumberOfDiners(), actualBooking.getNumberOfDiners());
+        assertActualVsExpectedBooking(booking, bookingById.get());
     }
 
     @Test
@@ -127,11 +119,13 @@ public class BookingServiceIntegrationTest {
         Optional<Booking> bookingById = bookingRepository.findById(returnedBooking.getId());
         assertTrue(bookingById.isPresent());
 
-        Booking actualBooking = bookingById.get();
-        // consider moving this into a helper method
-        assertEquals(booking.getRestaurantId(), actualBooking.getRestaurantId());
-        assertEquals(booking.getDate(), actualBooking.getDate());
-        assertEquals(booking.getNumberOfDiners(), actualBooking.getNumberOfDiners());
+        assertActualVsExpectedBooking(booking, bookingById.get());
+    }
+
+    private void assertActualVsExpectedBooking(final Booking expected, final Booking actual) {
+        assertEquals(expected.getRestaurantId(), actual.getRestaurantId());
+        assertEquals(expected.getDate(), actual.getDate());
+        assertEquals(expected.getNumberOfDiners(), actual.getNumberOfDiners());
     }
 
 }
