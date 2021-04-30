@@ -1,0 +1,19 @@
+openapi: "3.0.3"
+info:
+  title: "BookingService API"
+  description: "API for creating bookings at a restaurant"
+  version: "1.0.0"
+servers:
+  - url: "https://Localhost:8080"
+paths:
+  /bookings:
+    post:
+      summary: "POST bookings"
+      operationId: "createBooking"
+      responses:
+        "200":
+          description: "OK"
+        "404":
+          description: "Restaurant not found"
+        "409":
+          description: "No available capacity for the booking"
