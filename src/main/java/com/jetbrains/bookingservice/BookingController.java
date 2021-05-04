@@ -29,7 +29,7 @@ public class BookingController {
         Restaurant restaurant = restTemplate.getForObject("http://localhost:8080/restaurants/" + booking.getRestaurantId(), Restaurant.class);
 
         // check if the restaurant actually exists 
-        checkIfRestaurantExists(booking, restaurant);
+        checkIfRestaurantExists(restaurant, booking.getRestaurantId());
 
         // check if the number of diners in the booking is more than the number of seats in the restaurant
         if (restaurant.capacity() < booking.getNumberOfDiners()) {
@@ -53,9 +53,9 @@ public class BookingController {
         return repository.save(booking);
     }
 
-    private void checkIfRestaurantExists(Booking booking, Restaurant restaurant) {
+    private void checkIfRestaurantExists(Restaurant restaurant, String restaurantId) {
         if (restaurant == null) {
-            throw new RestaurantNotFoundException(booking.getRestaurantId());
+            throw new RestaurantNotFoundException(restaurantId);
         }
     }
 
