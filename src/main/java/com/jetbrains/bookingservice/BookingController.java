@@ -2,6 +2,7 @@ package com.jetbrains.bookingservice;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,7 @@ public class BookingController {
         Restaurant restaurant = restTemplate.getForObject("http://localhost:8080/restaurants/" + booking.getRestaurantId(), Restaurant.class);
 
         // check if the restaurant actually exists 
-        checkIfRestaurantExists(restaurant, booking.getRestaurantId());
+        throwExceptionIfRestaurantNotValid(restaurant, booking.getRestaurantId());
 
         // check if the number of diners in the booking is more than the number of seats in the restaurant
         if (restaurant.capacity() < booking.getNumberOfDiners()) {
@@ -43,8 +44,7 @@ public class BookingController {
 
         // find all the bookings for that day and check that with all the booked diners the restaurant still has space for the new booking diners
         List<Booking> allByRestaurantIdAndDate = repository.findAllByRestaurantIdAndDate(booking.getRestaurantId(), booking.getDate());
-        int totalDinersOnThisDay = allByRestaurantIdAndDate
-                                             .stream().mapToInt(Booking::getNumberOfDiners).sum();
+        int totalDinersOnThisDay = allByRestaurantIdAndDate.stream().mapToInt(Booking::getNumberOfDiners).sum();
         if (totalDinersOnThisDay + booking.getNumberOfDiners() > restaurant.capacity()) {
             throw new NoAvailableCapacityException("Restaurant all booked up!");
         }
@@ -53,7 +53,7 @@ public class BookingController {
         return repository.save(booking);
     }
 
-    private void checkIfRestaurantExists(Restaurant restaurant, String restaurantId) {
+    private void throwExceptionIfRestaurantNotValid(@Nullable Restaurant restaurant, String restaurantId) {
         if (restaurant == null) {
             throw new RestaurantNotFoundException(restaurantId);
         }
