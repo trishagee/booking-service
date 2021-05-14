@@ -31,6 +31,7 @@ class BookingControllerTest {
         Mockito.when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
                .thenReturn(new Restaurant("2", 5, Set.of()));
 
+        // TODO: er... this test has a different ID for restaurant and booking, should this not fail?
         // expect
         Booking newBooking = new Booking("1", LocalDate.now(), 10);
         assertAll(() -> assertThrows(NoAvailableCapacityException.class,
