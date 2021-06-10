@@ -29,7 +29,7 @@ class BookingControllerTest {
         BookingController bookingController = new BookingController(repository);
         // stub
         Mockito.when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
-               .thenReturn(new Restaurant("2", 5, Set.of()));
+               .thenReturn(new Restaurant("2", 5, Set.of(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY)));
 
         // expect
         Booking newBooking = new Booking("1", LocalDate.now(), 10);

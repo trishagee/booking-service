@@ -1,11 +1,11 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.0-RC1'
+    id 'org.springframework.boot' version '2.5.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
 
 group = 'com.jetbrains'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 sourceCompatibility = '16'
 
 repositories {
@@ -18,7 +18,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    implementation 'mysql:mysql-connector-java:8.0.24'
+    implementation 'mysql:mysql-connector-java:8.0.25'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
