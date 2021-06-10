@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   mysql:
-    image: mysql:8.0.24
+    image: mysql:8.0.25
     environment:
       - MYSQL_ROOT_PASSWORD=supersecurepassword
       - MYSQL_DATABASE=booking_service_db
