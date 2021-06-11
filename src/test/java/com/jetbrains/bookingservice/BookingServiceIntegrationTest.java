@@ -16,7 +16,9 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -32,6 +34,7 @@ public class BookingServiceIntegrationTest {
     @Autowired
     private BookingRepository bookingRepository;
 
+    //TODO: actually our API is wrong, restaurant/ID should be at the root
     @Test
     @DisplayName("Should be able to create a simple booking")
     void shouldBeAbleToCreateASimpleBooking() throws Exception {
@@ -123,6 +126,41 @@ public class BookingServiceIntegrationTest {
         assertTrue(bookingById.isPresent());
 
         assertActualVsExpectedBooking(booking, bookingById.get());
+    }
+
+    @Test
+    @DisplayName("Should get a list of bookings for a restaurant")
+    void shouldGetAListOfBookingsForARestaurant() throws Exception {
+        // given
+        bookingRepository.deleteAll();
+        String restaurantId = "3";
+        bookingRepository.save(new Booking(restaurantId, LocalDate.of(2021, 6, 12), 5));
+        bookingRepository.save(new Booking(restaurantId, LocalDate.of(2021, 6, 13), 7));
+        bookingRepository.save(new Booking(restaurantId, LocalDate.of(2021, 6, 14), 11));
+
+        // when
+        mockMvc.perform(get("/restaurant/{restaurantId}/bookings", restaurantId))
+               .andExpect(content().json("""
+                                                 [{
+                                                          "id" : 1,
+                                                          "restaurantId" : "3",
+                                                          "date" : "2021-06-12",
+                                                          "numberOfDiners" : 5
+                                                  },
+                                                  {
+                                                          "id" : 2,
+                                                          "restaurantId" : "3",
+                                                          "date" : "2021-06-13",
+                                                          "numberOfDiners" : 7
+                                                  },
+                                                  {
+                                                          "id" : 3,
+                                                          "restaurantId" : "3",
+                                                          "date" : "2021-06-14",
+                                                          "numberOfDiners" : 11
+                                                  }
+                                                  ]
+                                                 """));
     }
 
     private void assertActualVsExpectedBooking(final Booking expected, final Booking actual) {

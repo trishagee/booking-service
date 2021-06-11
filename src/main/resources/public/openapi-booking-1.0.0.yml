@@ -17,3 +17,40 @@ paths:
           description: "Restaurant not found"
         "409":
           description: "No available capacity for the booking"
+  /restaurant/{restaurantId}/bookings:
+    get:
+      summary: "GET restaurant/{restaurantId}/bookings"
+      description: Returns a list of all bookings for a specified restaurant
+      operationId: "getBookingsForRestaurant"
+      parameters:
+        - name: "restaurantId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        '200':
+          description: Successfully returned a list of restaurant bookings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+
+components:
+  schemas:
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Booking ID
+        restaurantId:
+          type: string
+          description: The ID of the restaurant for this booking
+        date:
+          type: string
+          format: date-time
+          description: The date of the booking. Currently only supports day and not time
+        numberOfDiners:
+          type: integer
+          description: Number of diners in the booking. Can't specify, for example, if these are all adults or babies etc

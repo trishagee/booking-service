@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface BookingRepository extends CrudRepository<Booking, Long> {
     List<Booking> findAllByRestaurantIdAndDate(String restaurantId, LocalDate bookingDate);
+
+    List<Booking> findAllByRestaurantId(String restaurantId);
 }
