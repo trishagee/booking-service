@@ -21,18 +21,18 @@ public class BookingController {
         return builder.build();
     }
 
-    @GetMapping("/restaurant/{restaurantId}/bookings")
+    @GetMapping("/restaurants/{restaurantId}/bookings")
     public List<Booking> getBookingsForRestaurant(@PathVariable String restaurantId) {
         return repository.findAllByRestaurantId(restaurantId);
     }
 
-    @PostMapping("/bookings")
-    public Booking createBooking(@RequestBody Booking booking, RestTemplate restTemplate) {
+    @PostMapping("/restaurants/{restaurantId}/bookings")
+    public Booking createBooking(@RequestBody Booking booking, @PathVariable String restaurantId, RestTemplate restTemplate) {
         // In a "real" environment this would at the very least be a property/environment variable, but ideally something like Service Discovery like Eureka
-        Restaurant restaurant = restTemplate.getForObject("http://localhost:8080/restaurants/" + booking.getRestaurantId(), Restaurant.class);
+        Restaurant restaurant = restTemplate.getForObject("http://localhost:8080/restaurants/" + restaurantId, Restaurant.class);
 
         if (restaurant == null) {
-            throw new RestaurantNotFoundException(booking.getRestaurantId());
+            throw new RestaurantNotFoundException(restaurantId);
         }
 
         if (restaurant.capacity() < booking.getNumberOfDiners()) {
@@ -43,9 +43,9 @@ public class BookingController {
             throw new RestaurantClosedException("Restaurant is not open on: " + booking.getDate());
         }
 
-        List<Booking> allByRestaurantIdAndDate = repository.findAllByRestaurantIdAndDate(booking.getRestaurantId(), booking.getDate());
+        List<Booking> allByRestaurantIdAndDate = repository.findAllByRestaurantIdAndDate(restaurantId, booking.getDate());
         int totalDinersOnThisDay = allByRestaurantIdAndDate
-                                             .stream().mapToInt(Booking::getNumberOfDiners).sum();
+                .stream().mapToInt(Booking::getNumberOfDiners).sum();
         if (totalDinersOnThisDay + booking.getNumberOfDiners() > restaurant.capacity()) {
             throw new NoAvailableCapacityException("Restaurant all booked up!");
         }

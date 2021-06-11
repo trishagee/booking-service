@@ -28,13 +28,14 @@ class BookingControllerTest {
         // given
         BookingController bookingController = new BookingController(repository);
         // stub
+        String restaurantId = "2";
         Mockito.when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
-               .thenReturn(new Restaurant("2", 5, Set.of(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY)));
+               .thenReturn(new Restaurant(restaurantId, 5, Set.of(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY)));
 
         // expect
         Booking newBooking = new Booking("1", LocalDate.now(), 10);
         assertAll(() -> assertThrows(NoAvailableCapacityException.class,
-                                     () -> bookingController.createBooking(newBooking, restTemplate)),
+                                     () -> bookingController.createBooking(newBooking, restaurantId, restTemplate)),
                   () -> verifyNoInteractions(repository));
     }
 
@@ -44,12 +45,12 @@ class BookingControllerTest {
                                                               @Mock RestTemplate restTemplate) {
         // given
         BookingController bookingController = new BookingController(repository);
+        String restaurantId = "1";
+        Booking newBooking = new Booking(restaurantId, LocalDate.now(), 5647);
 
-
-        Booking newBooking = new Booking("1", LocalDate.now(), 5647);
-
+        // expect
         assertAll(() -> assertThrows(RestaurantNotFoundException.class,
-                                     () -> bookingController.createBooking(newBooking, restTemplate)),
+                                     () -> bookingController.createBooking(newBooking, restaurantId, restTemplate)),
                   () -> verifyNoInteractions(repository));
     }
 
@@ -59,15 +60,16 @@ class BookingControllerTest {
                                                          @Mock RestTemplate restTemplate) {
         // given:
         BookingController bookingController = new BookingController(repository);
+        String restaurantId = "99";
         Mockito.when(restTemplate.getForObject(anyString(), eq(Restaurant.class)))
-               .thenReturn(new Restaurant("99", 20, Set.of(MONDAY, TUESDAY)));
+               .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, TUESDAY)));
 
         LocalDate bookingDate = LocalDate.of(2021, 4, 25);
-        Booking newBooking = new Booking("99", bookingDate, 10);
+        Booking newBooking = new Booking(restaurantId, bookingDate, 10);
 
         // expect:
         assertAll(() -> assertThrows(RestaurantClosedException.class,
-                                     () -> bookingController.createBooking(newBooking, restTemplate)),
+                                     () -> bookingController.createBooking(newBooking, restaurantId, restTemplate)),
                   () -> verifyNoInteractions(repository));
     }
 
@@ -92,7 +94,7 @@ class BookingControllerTest {
 
         // expect:
         assertAll(() -> assertThrows(NoAvailableCapacityException.class,
-                                     () -> bookingController.createBooking(newBooking, restTemplate)),
+                                     () -> bookingController.createBooking(newBooking, restaurantId, restTemplate)),
                   () -> verifyNoMoreInteractions(repository));
     }
 
@@ -115,7 +117,7 @@ class BookingControllerTest {
                .thenReturn(bookingList);
 
         // when:
-        bookingController.createBooking(newBooking, restTemplate);
+        bookingController.createBooking(newBooking, restaurantId, restTemplate);
 
         // expect:
         verify(repository).save(newBooking);

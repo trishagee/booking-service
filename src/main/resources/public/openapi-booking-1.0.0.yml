@@ -4,11 +4,12 @@ info:
   description: "API for creating bookings at a restaurant"
   version: "1.0.0"
 servers:
-  - url: "https://Localhost:8080"
+  - url: "https://Localhost:8081"
 paths:
-  /bookings:
+  /restaurants/{restaurantId}/bookings:
     post:
-      summary: "POST bookings"
+      summary: "POST restaurants/{restaurantId}/bookings"
+      description: Try to create a new booking for the given restaurant
       operationId: "createBooking"
       responses:
         "200":
@@ -17,9 +18,8 @@ paths:
           description: "Restaurant not found"
         "409":
           description: "No available capacity for the booking"
-  /restaurant/{restaurantId}/bookings:
     get:
-      summary: "GET restaurant/{restaurantId}/bookings"
+      summary: "GET restaurants/{restaurantId}/bookings"
       description: Returns a list of all bookings for a specified restaurant
       operationId: "getBookingsForRestaurant"
       parameters:

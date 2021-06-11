@@ -34,16 +34,16 @@ public class BookingServiceIntegrationTest {
     @Autowired
     private BookingRepository bookingRepository;
 
-    //TODO: actually our API is wrong, restaurant/ID should be at the root
     @Test
     @DisplayName("Should be able to create a simple booking")
     void shouldBeAbleToCreateASimpleBooking() throws Exception {
         bookingRepository.deleteAll();
         //client selects a restaurant with an id and passes the id, date and time, number of diners
-        Booking booking = new Booking("1", LocalDate.of(2021, 4, 26), 4);
+        String restaurantId = "1";
+        Booking booking = new Booking(restaurantId, LocalDate.of(2021, 4, 26), 4);
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/bookings")
+        MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", restaurantId)
                                                       .contentType("application/json")
                                                       .content(objectMapper.writeValueAsString(booking)))
                                      .andExpect(status().isOk())
@@ -62,14 +62,15 @@ public class BookingServiceIntegrationTest {
     void shouldNotAllowABookingOnADayWhereExistingBookingsTakeUpTheCapacity() throws Exception {
         // given:
         // existing bookings in the database, 2 to nearly fill Dalia's restaurant
-        Booking booking1 = new Booking("1", LocalDate.of(2021, 4, 26), 11);
+        String restaurantId = "1";
+        Booking booking1 = new Booking(restaurantId, LocalDate.of(2021, 4, 26), 11);
         bookingRepository.save(booking1);
-        Booking booking2 = new Booking("1", LocalDate.of(2021, 4, 26), 7);
+        Booking booking2 = new Booking(restaurantId, LocalDate.of(2021, 4, 26), 7);
         bookingRepository.save(booking2);
 
         // when
-        Booking newBooking = new Booking("1", LocalDate.of(2021, 4, 26), 4);
-        mockMvc.perform(post("/bookings")
+        Booking newBooking = new Booking(restaurantId, LocalDate.of(2021, 4, 26), 4);
+        mockMvc.perform(post("/restaurants/{restaurantId}/bookings", restaurantId)
                                 .contentType("application/json")
                                 .content(objectMapper.writeValueAsString(newBooking)))
                .andExpect(status().isConflict())
@@ -80,15 +81,16 @@ public class BookingServiceIntegrationTest {
     void shouldBeAbleToCreateABookingEvenWhenThereAreOtherBookingsOnADifferentDay() throws Exception {
         bookingRepository.deleteAll();
         // existing bookings in the database, 2 to fill Helen's restaurant on a different day
-        Booking booking1 = new Booking("2", LocalDate.of(2021, 4, 25), 11);
+        String restaurantId = "2";
+        Booking booking1 = new Booking(restaurantId, LocalDate.of(2021, 4, 25), 11);
         bookingRepository.save(booking1);
-        Booking booking2 = new Booking("2", LocalDate.of(2021, 4, 25), 19);
+        Booking booking2 = new Booking(restaurantId, LocalDate.of(2021, 4, 25), 19);
         bookingRepository.save(booking2);
 
-        Booking booking = new Booking("2", LocalDate.of(2021, 4, 24), 4);
+        Booking booking = new Booking(restaurantId, LocalDate.of(2021, 4, 24), 4);
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/bookings")
+        MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", restaurantId)
                                                       .contentType("application/json")
                                                       .content(objectMapper.writeValueAsString(booking)))
                                      .andExpect(status().isOk())
@@ -111,10 +113,11 @@ public class BookingServiceIntegrationTest {
         Booking booking2 = new Booking("3", LocalDate.of(2021, 4, 27), 1);
         bookingRepository.save(booking2);
 
-        Booking booking = new Booking("4", LocalDate.of(2021, 4, 27), 15);
+        String restaurantId = "4";
+        Booking booking = new Booking(restaurantId, LocalDate.of(2021, 4, 27), 15);
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/bookings")
+        MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", restaurantId)
                                                       .contentType("application/json")
                                                       .content(objectMapper.writeValueAsString(booking)))
                                      .andExpect(status().isOk())
@@ -139,7 +142,7 @@ public class BookingServiceIntegrationTest {
         bookingRepository.save(new Booking(restaurantId, LocalDate.of(2021, 6, 14), 11));
 
         // when
-        mockMvc.perform(get("/restaurant/{restaurantId}/bookings", restaurantId))
+        mockMvc.perform(get("/restaurants/{restaurantId}/bookings", restaurantId))
                .andExpect(content().json("""
                                                  [{
                                                           "id" : 1,
