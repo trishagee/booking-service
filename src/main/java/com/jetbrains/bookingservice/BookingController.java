@@ -1,24 +1,17 @@
 package com.jetbrains.bookingservice;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
 @RestController
 public class BookingController {
-
     private final BookingRepository repository;
+    private final RestaurantClient restaurantClient;
 
-    public BookingController(final BookingRepository repository) {
+    public BookingController(final BookingRepository repository, final RestaurantClient restaurantClient) {
         this.repository = repository;
-    }
-
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
+        this.restaurantClient = restaurantClient;
     }
 
     @GetMapping("/restaurants/{restaurantId}/bookings")
@@ -27,9 +20,8 @@ public class BookingController {
     }
 
     @PostMapping("/restaurants/{restaurantId}/bookings")
-    public Booking createBooking(@RequestBody Booking booking, @PathVariable String restaurantId, RestTemplate restTemplate) {
-        // In a "real" environment this would at the very least be a property/environment variable, but ideally something like Service Discovery like Eureka
-        Restaurant restaurant = restTemplate.getForObject("http://localhost:8080/restaurants/" + restaurantId, Restaurant.class);
+    public Booking createBooking(@RequestBody Booking booking, @PathVariable String restaurantId) {
+        Restaurant restaurant = restaurantClient.getRestaurant(restaurantId);
 
         if (restaurant == null) {
             throw new RestaurantNotFoundException(restaurantId);
