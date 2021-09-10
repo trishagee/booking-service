@@ -10,12 +10,26 @@ import static java.lang.String.format;
 public class MySQLContainerExtension implements BeforeAllCallback, AfterAllCallback {
     private MySQLContainer mySQLContainer;
 
+    private boolean isSpaceAutomation() {
+        return System.getenv("JB_SPACE_API_URL") != null;
+    }
+
     @Override
     public void beforeAll(ExtensionContext context) {
         String username = "user";
         String password = "app-password";
         String databaseName = "booking_service_db";
 
+        if (isSpaceAutomation()) {
+            // When running in Space Automation, a service container "mysql" will be running
+            String jdbcUrl = format("jdbc:mysql://mysql:3306/%s", databaseName);
+            System.setProperty("spring.datasource.url", jdbcUrl);
+            System.setProperty("spring.datasource.username", username);
+            System.setProperty("spring.datasource.password", password);
+            return;
+        }
+
+        // When running locally, spin up a test container
         mySQLContainer = new MySQLContainer("mysql:8.0.25")
                 .withDatabaseName(databaseName)
                 .withUsername(username)
@@ -30,6 +44,8 @@ public class MySQLContainerExtension implements BeforeAllCallback, AfterAllCallb
 
     @Override
     public void afterAll(ExtensionContext context) {
+        if (isSpaceAutomation()) return;
+
         mySQLContainer.stop();
     }
 }

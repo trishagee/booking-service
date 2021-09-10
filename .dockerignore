@@ -1,0 +1,8 @@
+**/.dockerignore
+**/.idea
+**/.git
+**/.gitignore
+**/*.*proj.user
+**/*.dbmdl
+**/*.jfm
+**/docker-compose*
