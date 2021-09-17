@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface BookingRepository extends CrudRepository<Booking, Long> {
-    List<Booking> findAllByRestaurantIdAndDate(String restaurantId, LocalDate bookingDate);
+    List<Booking> findAllByRestaurantIdAndDate(final String restaurantId, final LocalDate bookingDate);
 
-    List<Booking> findAllByRestaurantId(String restaurantId);
+    List<Booking> findAllByRestaurantId(final String restaurantId);
 }
