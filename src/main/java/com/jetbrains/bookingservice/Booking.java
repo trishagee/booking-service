@@ -4,22 +4,18 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class Booking {
     @Id
     @GeneratedValue
-    private long id;
+    private Long id;
     private String restaurantId;
-    /**
-     * For now, the booking service is overly simple, and we can only book for a date, and not a specific time.
-     */
     private LocalDate date;
-    private int numberOfDiners;
+    private Integer numberOfDiners;
 
-    public Booking() {
-
-    }
+    public Booking() {}
 
     public Booking(final String restaurantId, final LocalDate date, final int numberOfDiners) {
         this.restaurantId = restaurantId;
@@ -27,20 +23,8 @@ public class Booking {
         this.numberOfDiners = numberOfDiners;
     }
 
-    public String getRestaurantId() {
-        return restaurantId;
-    }
-
     public LocalDate getDate() {
-        return date;
-    }
-
-    public int getNumberOfDiners() {
-        return numberOfDiners;
-    }
-
-    public Long getId() {
-        return id;
+        return this.date;
     }
 
     @Override
@@ -48,10 +32,10 @@ public class Booking {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Booking booking = (Booking) o;
+        var booking = (Booking) o;
 
-        if (id != booking.id) return false;
-        if (numberOfDiners != booking.numberOfDiners) return false;
+        if (!id.equals(booking.id)) return false;
+        if (!numberOfDiners.equals(booking.numberOfDiners)) return false;
         if (!restaurantId.equals(booking.restaurantId)) return false;
         return date.equals(booking.date);
     }
@@ -74,5 +58,23 @@ public class Booking {
         sb.append(", numberOfDiners=").append(numberOfDiners);
         sb.append('}');
         return sb.toString();
+    }
+
+    Boolean isNumberOfDinersMoreThanGivenCapacity(final Integer capacity){
+        return this.numberOfDiners > capacity;
+    }
+
+    Boolean isPossibleOnGivenDateAt(final Restaurant restaurant) {
+        return restaurant.isRestaurantOpenOn(this.date.getDayOfWeek());
+    }
+
+    Integer getSumOfBookingDinersAnd(final Integer totalDiners){
+        return this.numberOfDiners + totalDiners;
+    }
+
+    static Integer calculateTotalDinersOnGivenDate(final List<Booking> bookings) {
+        return bookings.stream()
+            .mapToInt(booking -> booking.numberOfDiners)
+            .sum();
     }
 }
