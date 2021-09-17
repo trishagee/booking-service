@@ -6,117 +6,80 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
-import static java.time.DayOfWeek.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class BookingControllerTest {
     @Test
-    @DisplayName("Should not allow bookings that exceed restaurant capacity")
-    void shouldNotAllowBookingsThatExceedRestaurantCapacity(@Mock BookingRepository repository,
-                                                            @Mock RestaurantClient restaurantClient) {
-        // given
-        BookingController bookingController = new BookingController(repository, restaurantClient);
-        // stub
+    @DisplayName("Test createBooking should create a booking when all validations are passed")
+    void testCreateBooking_shouldCreateBookingWhenAllValidationsPassed(@Mock BookingService bookingService) {
+        // Arrange
+        BookingController bookingController = new BookingController(bookingService);
         String restaurantId = "2";
-        Mockito.when(restaurantClient.getRestaurant(restaurantId))
-               .thenReturn(new Restaurant(restaurantId, 5, Set.of(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY)));
+        LocalDate now = LocalDate.now();
+        int numberOfDiners = 10;
+        Booking booking = new Booking(restaurantId, now, numberOfDiners);
+        Mockito.when(bookingService.createBooking(any(), anyString()))
+            .thenReturn(new BookingResponse(booking, "", HttpStatus.CREATED));
+        Booking newBooking = new Booking(restaurantId, now, numberOfDiners);
 
-        // expect
-        Booking newBooking = new Booking("1", LocalDate.now(), 10);
-        assertAll(() -> assertThrows(NoAvailableCapacityException.class,
-                                     () -> bookingController.createBooking(newBooking, restaurantId)),
-                  () -> verifyNoInteractions(repository));
+        // Action
+        BookingResponse bookingResponse = bookingController.createBooking(newBooking, restaurantId);
+
+        // Assert
+        assertEquals(HttpStatus.CREATED, bookingResponse.getHttpStatus());
+        assertEquals(false, bookingResponse.hasError());
     }
 
     @Test
-    @DisplayName("Should throw an Exception if an invalid restaurant ID is given")
-    void shouldThrowAnExceptionIfAnInvalidRestaurantIdIsGiven(@Mock BookingRepository repository,
-                                                              @Mock RestaurantClient restaurantClient) {
-        // given
-        BookingController bookingController = new BookingController(repository, restaurantClient);
-        String restaurantId = "1";
-        Booking newBooking = new Booking(restaurantId, LocalDate.now(), 5647);
+    @DisplayName("Test createBooking should not create a booking when number of diners exceeds available restaurant capacity")
+    void testCreateBooking_shouldNotCreateBookingWhenDinersExceedsRestaurantCapacity(@Mock BookingService bookingService) {
+        // Arrange
+        BookingController bookingController = new BookingController(bookingService);
+        String restaurantId = "2";
+        LocalDate now = LocalDate.now();
+        int numberOfDiners = 10;
+        String expectedErrorMessage = "Number of diners exceeds available restaurant capacity";
+        BookingResponse expectedBookingResponse = new BookingResponse(expectedErrorMessage
+            , HttpStatus.CONFLICT);
+        Mockito.when(bookingService.createBooking(any(), anyString())).thenReturn(expectedBookingResponse);
+        Booking newBooking = new Booking(restaurantId, now, numberOfDiners);
 
-        // expect
-        assertAll(() -> assertThrows(RestaurantNotFoundException.class,
-                                     () -> bookingController.createBooking(newBooking, restaurantId)),
-                  () -> verifyNoInteractions(repository));
+        // Action
+        BookingResponse actualBookingResponse = bookingController.createBooking(newBooking, restaurantId);
+
+        // Assert
+        assertEquals(HttpStatus.CONFLICT, actualBookingResponse.getHttpStatus());
+        assertEquals(true, actualBookingResponse.hasError());
+        assertEquals(true, actualBookingResponse.isErrorMessageEqualTo(expectedErrorMessage));
     }
 
     @Test
-    @DisplayName("Should not allow a booking on a day the restaurant is shut")
-    void shouldNotAllowABookingOnADayTheRestaurantIsShut(@Mock BookingRepository repository,
-                                                         @Mock RestaurantClient restaurantClient) {
-        // given:
-        BookingController bookingController = new BookingController(repository, restaurantClient);
-        String restaurantId = "99";
-        Mockito.when(restaurantClient.getRestaurant(restaurantId))
-               .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, TUESDAY)));
+    @DisplayName("Test getBookingsForRestaurant should return booking list for a given restaurant id")
+    void testGetBookingsForRestaurant_shouldReturnBookingListForARestaurant(@Mock BookingService bookingService) {
+        // Arrange
+        BookingController bookingController = new BookingController(bookingService);
+        String restaurantId = "2";
+        LocalDate now = LocalDate.now();
+        int numberOfDiners = 10;
+        Booking expectedBooking = new Booking(restaurantId, now, numberOfDiners);
+        List<Booking> bookings = singletonList(expectedBooking);
+        BookingResponse expectedBookingResponse = new BookingResponse(bookings, "", HttpStatus.OK);
+        Mockito.when(bookingService.getBookingsForRestaurant(anyString())).thenReturn(expectedBookingResponse);
 
-        LocalDate bookingDate = LocalDate.of(2021, 4, 25);
-        Booking newBooking = new Booking(restaurantId, bookingDate, 10);
+        // Action
+        BookingResponse actualBookingResponse = bookingController.getBookingsForRestaurant(restaurantId);
 
-        // expect:
-        assertAll(() -> assertThrows(RestaurantClosedException.class,
-                                     () -> bookingController.createBooking(newBooking, restaurantId)),
-                  () -> verifyNoInteractions(repository));
-    }
-
-    @Test
-    @DisplayName("Should not allow a booking with more diners than availability for that day")
-    void shouldNotAllowABookingWithMoreDinersThanAvailabilityForThatDay(@Mock BookingRepository repository,
-                                                                        @Mock RestaurantClient restaurantClient) {
-        // for now, we're not going to worry about time / time slots, we going to do the stupidest thing and look at capacity for the whole day
-        // given:
-        BookingController bookingController = new BookingController(repository, restaurantClient);
-        String restaurantId = "101";
-        Mockito.when(restaurantClient.getRestaurant(restaurantId))
-               .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
-        LocalDate bookingDate = LocalDate.of(2021, 4, 26);
-        Booking newBooking = new Booking(restaurantId, bookingDate, 4);
-
-        List<Booking> bookingList = List.of(new Booking(restaurantId, LocalDate.of(2021, 4, 26), 10),
-                                            new Booking(restaurantId, LocalDate.of(2021, 4, 26), 7));
-        // stub the response from the repository
-        Mockito.when(repository.findAllByRestaurantIdAndDate(restaurantId, bookingDate))
-               .thenReturn(bookingList);
-
-        // expect:
-        assertAll(() -> assertThrows(NoAvailableCapacityException.class,
-                                     () -> bookingController.createBooking(newBooking, restaurantId)),
-                  () -> verifyNoMoreInteractions(repository));
-    }
-
-    @Test
-    @DisplayName("Should save a booking if the number of diners is fewer than the available capacity for the day")
-    void shouldSaveABookingIfTheNumberOfDinersIsFewerThanTheAvailableCapacityForTheDay(@Mock BookingRepository repository,
-                                                                                       @Mock RestaurantClient restaurantClient) {
-        // for now, we're not going to worry about time / time slots, we going to do the stupidest thing and look at capacity for the whole day
-        BookingController bookingController = new BookingController(repository, restaurantClient);
-        String restaurantId = "101";
-        Mockito.when(restaurantClient.getRestaurant(restaurantId))
-               .thenReturn(new Restaurant(restaurantId, 20, Set.of(MONDAY, FRIDAY)));
-        LocalDate bookingDate = LocalDate.of(2021, 4, 26);
-        Booking newBooking = new Booking(restaurantId, bookingDate, 4);
-
-        List<Booking> bookingList = List.of(new Booking(restaurantId, LocalDate.of(2021, 4, 26), 8),
-                                            new Booking(restaurantId, LocalDate.of(2021, 4, 26), 7));
-        // stub the response from the repository
-        Mockito.when(repository.findAllByRestaurantIdAndDate(restaurantId, bookingDate))
-               .thenReturn(bookingList);
-
-        // when:
-        bookingController.createBooking(newBooking, restaurantId);
-
-        // expect:
-        verify(repository).save(newBooking);
+        // Assert
+        assertEquals(HttpStatus.OK, actualBookingResponse.getHttpStatus());
+        assertEquals(false, actualBookingResponse.hasError());
     }
 }
