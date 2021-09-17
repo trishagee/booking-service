@@ -8,9 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @ExtendWith(MySQLContainerExtension.class)
 class BookingServiceApplicationTests {
-
     @Test
     void contextLoads() {
     }
-
 }
