@@ -12,8 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import static java.time.DayOfWeek.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -119,4 +118,20 @@ class BookingControllerTest {
         // expect:
         verify(repository).save(newBooking);
     }
+
+    @Test
+    @DisplayName("Should be able to delete a booking by ID")
+    void shouldBeAbleToDeleteABookingById(@Mock BookingRepository repository,
+                                          @Mock RestaurantClient restaurantClient) {
+        // given
+        BookingController bookingController = new BookingController(repository, restaurantClient);
+        Booking bookingToDelete = new Booking("103", null, 0);
+
+        // when:
+        bookingController.deleteBooking(bookingToDelete);
+
+        // expect:
+        verify(repository).delete(bookingToDelete);
+    }
+
 }
