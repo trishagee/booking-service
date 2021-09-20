@@ -1,7 +1,9 @@
 package com.jetbrains.bookingservice;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -16,6 +18,12 @@ public class BookingController {
 
     @GetMapping("/restaurants/{restaurantId}/bookings")
     public List<Booking> getBookingsForRestaurant(@PathVariable String restaurantId) {
+        return repository.findAllByRestaurantId(restaurantId);
+    }
+
+    @GetMapping("/restaurants/{restaurantId}/bookings/{date}")
+    public List<Booking> getBookingsForRestaurant(@PathVariable String restaurantId,
+                                                  @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
         return repository.findAllByRestaurantId(restaurantId);
     }
 
