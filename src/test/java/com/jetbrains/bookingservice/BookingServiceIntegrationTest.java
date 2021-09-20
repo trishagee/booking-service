@@ -19,8 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.time.DayOfWeek.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -62,8 +61,8 @@ public class BookingServiceIntegrationTest {
 
         // when
         MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
-                                                      .contentType("application/json")
-                                                      .content(objectMapper.writeValueAsString(booking)))
+                                             .contentType("application/json")
+                                             .content(objectMapper.writeValueAsString(booking)))
                                      .andExpect(status().isOk())
                                      .andReturn();
         Booking returnedBooking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Booking.class);
@@ -88,8 +87,8 @@ public class BookingServiceIntegrationTest {
         // when
         Booking newBooking = new Booking(RESTAURANT_ID, LocalDate.of(2021, 4, 26), 4);
         mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
-                                .contentType("application/json")
-                                .content(objectMapper.writeValueAsString(newBooking)))
+                       .contentType("application/json")
+                       .content(objectMapper.writeValueAsString(newBooking)))
                .andExpect(status().isConflict())
                .andExpect(status().reason("NoAvailableCapacityException"));
     }
@@ -106,8 +105,8 @@ public class BookingServiceIntegrationTest {
 
         // when
         MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
-                                                      .contentType("application/json")
-                                                      .content(objectMapper.writeValueAsString(booking)))
+                                             .contentType("application/json")
+                                             .content(objectMapper.writeValueAsString(booking)))
                                      .andExpect(status().isOk())
                                      .andReturn();
         Booking returnedBooking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Booking.class);
@@ -132,8 +131,8 @@ public class BookingServiceIntegrationTest {
 
         // when
         MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", restaurantId)
-                                                      .contentType("application/json")
-                                                      .content(objectMapper.writeValueAsString(booking)))
+                                             .contentType("application/json")
+                                             .content(objectMapper.writeValueAsString(booking)))
                                      .andExpect(status().isOk())
                                      .andReturn();
         Booking returnedBooking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Booking.class);
@@ -167,6 +166,22 @@ public class BookingServiceIntegrationTest {
                .andExpect(jsonPath("$[2].restaurantId").value(RESTAURANT_ID))
                .andExpect(jsonPath("$[2].date").value("2021-06-14"))
                .andExpect(jsonPath("$[2].numberOfDiners").value(11));
+    }
+
+    @Test
+    @DisplayName("Should get a list of bookings by date")
+    void shouldGetAListOfBookingsByDate() throws Exception {
+        // given
+        bookingRepository.save(new Booking(RESTAURANT_ID, LocalDate.of(2021, 9, 12), 5));
+        bookingRepository.save(new Booking(RESTAURANT_ID, LocalDate.of(2021, 9, 13), 7));
+        bookingRepository.save(new Booking(RESTAURANT_ID, LocalDate.of(2021, 9, 14), 11));
+
+        // when
+        mockMvc.perform(get("/restaurants/{restaurantId}/bookings/2021-09-13", RESTAURANT_ID))
+               .andExpect(jsonPath("$[0].id").exists())
+               .andExpect(jsonPath("$[0].restaurantId").value(RESTAURANT_ID))
+               .andExpect(jsonPath("$[0].date").value("2021-09-13"))
+               .andExpect(jsonPath("$[0].numberOfDiners").value(7));
     }
 
     private void assertActualVsExpectedBooking(final Booking expected, final Booking actual) {
