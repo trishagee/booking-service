@@ -45,7 +45,8 @@ public class BookingController {
         return repository.save(booking);
     }
 
-    public void deleteBooking(Booking booking) {
-        repository.delete(booking);
+    @DeleteMapping("/restaurants/{restaurantId}/bookings/{bookingId}")
+    public void deleteBooking(@PathVariable Long bookingId) {
+        repository.deleteById(bookingId);
     }
 }

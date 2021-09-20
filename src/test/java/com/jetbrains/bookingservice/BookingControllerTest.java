@@ -125,13 +125,13 @@ class BookingControllerTest {
                                           @Mock RestaurantClient restaurantClient) {
         // given
         BookingController bookingController = new BookingController(repository, restaurantClient);
-        Booking bookingToDelete = new Booking("103", null, 0);
+        long bookingId = 13L;
 
         // when:
-        bookingController.deleteBooking(bookingToDelete);
+        bookingController.deleteBooking(bookingId);
 
         // expect:
-        verify(repository).delete(bookingToDelete);
+        verify(repository).deleteById(bookingId);
     }
 
 }
