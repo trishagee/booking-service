@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -61,11 +62,7 @@ public class BookingServiceIntegrationTest {
         Booking booking = new Booking(RESTAURANT_ID, LocalDate.of(2021, 4, 26), 4);
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
-                                                      .contentType("application/json")
-                                                      .content(objectMapper.writeValueAsString(booking)))
-                                     .andExpect(status().isOk())
-                                     .andReturn();
+        MvcResult mvcResult = postBookingAsJson(booking, RESTAURANT_ID);
         Booking returnedBooking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Booking.class);
 
         // then
@@ -87,11 +84,7 @@ public class BookingServiceIntegrationTest {
 
         // when
         Booking newBooking = new Booking(RESTAURANT_ID, LocalDate.of(2021, 4, 26), 4);
-        mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
-                                .contentType("application/json")
-                                .content(objectMapper.writeValueAsString(newBooking)))
-               .andExpect(status().isConflict())
-               .andExpect(status().reason("NoAvailableCapacityException"));
+        postBookingAndExpectError(newBooking, status().isConflict(), "NoAvailableCapacityException");
     }
 
     @Test
@@ -105,11 +98,7 @@ public class BookingServiceIntegrationTest {
         Booking booking = new Booking(RESTAURANT_ID, LocalDate.of(2021, 4, 24), 4);
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
-                                                      .contentType("application/json")
-                                                      .content(objectMapper.writeValueAsString(booking)))
-                                     .andExpect(status().isOk())
-                                     .andReturn();
+        MvcResult mvcResult = postBookingAsJson(booking, RESTAURANT_ID);
         Booking returnedBooking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Booking.class);
 
         // then
@@ -131,11 +120,7 @@ public class BookingServiceIntegrationTest {
         Booking booking = new Booking(restaurantId, LocalDate.of(2021, 4, 27), 15);
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", restaurantId)
-                                                      .contentType("application/json")
-                                                      .content(objectMapper.writeValueAsString(booking)))
-                                     .andExpect(status().isOk())
-                                     .andReturn();
+        MvcResult mvcResult = postBookingAsJson(booking, restaurantId);
         Booking returnedBooking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Booking.class);
 
         // then
@@ -167,6 +152,22 @@ public class BookingServiceIntegrationTest {
                .andExpect(jsonPath("$[2].restaurantId").value(RESTAURANT_ID))
                .andExpect(jsonPath("$[2].date").value("2021-06-14"))
                .andExpect(jsonPath("$[2].numberOfDiners").value(11));
+    }
+
+    private MvcResult postBookingAsJson(Booking booking, String restaurantId) throws Exception {
+        return mockMvc.perform(post("/restaurants/{restaurantId}/bookings", restaurantId)
+                                       .contentType("application/json")
+                                       .content(objectMapper.writeValueAsString(booking)))
+                      .andExpect(status().isOk())
+                      .andReturn();
+    }
+
+    private void postBookingAndExpectError(Booking newBooking, ResultMatcher status, String statusReason) throws Exception {
+        mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(newBooking)))
+               .andExpect(status)
+               .andExpect(status().reason(statusReason));
     }
 
     private void assertActualVsExpectedBooking(final Booking expected, final Booking actual) {
