@@ -3,6 +3,7 @@ package com.jetbrains.bookingservice;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -23,8 +24,8 @@ public class BookingController {
 
     @GetMapping("/restaurants/{restaurantId}/bookings/{date}")
     public List<Booking> getBookingsForRestaurant(@PathVariable String restaurantId,
-                                                  @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
-        return repository.findAllByRestaurantId(restaurantId);
+                                                  @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        return repository.findAllByRestaurantIdAndDate(restaurantId, date);
     }
 
     @PostMapping("/restaurants/{restaurantId}/bookings")
