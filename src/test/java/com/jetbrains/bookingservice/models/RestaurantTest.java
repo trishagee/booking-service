@@ -1,5 +1,7 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.models;
 
+import com.jetbrains.bookingservice.models.Booking;
+import com.jetbrains.bookingservice.models.Restaurant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,10 +1,10 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.views;
 
 import org.springframework.http.HttpStatus;
 
 import java.util.Objects;
 
-public class BookingResponse {
+public class BookingResponseView {
     private final Object data;
     private final HttpStatus httpStatus;
     private final String errorMessage;
@@ -17,13 +17,13 @@ public class BookingResponse {
       return httpStatus;
     }
 
-  public BookingResponse(String errorMessage, HttpStatus httpStatus) {
+  public BookingResponseView(String errorMessage, HttpStatus httpStatus) {
       this.data = null;
       this.errorMessage = errorMessage;
       this.httpStatus = httpStatus;
     }
 
-    public BookingResponse(Object data, String errorMessage, HttpStatus httpStatus) {
+    public BookingResponseView(Object data, String errorMessage, HttpStatus httpStatus) {
       this.data = data;
       this.errorMessage = errorMessage;
       this.httpStatus = httpStatus;

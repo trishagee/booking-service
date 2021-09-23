@@ -1,4 +1,4 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.models;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -68,7 +68,7 @@ public class Booking {
         return this.numberOfDiners > capacity;
     }
 
-    Boolean isPossibleOnGivenDateAt(final Restaurant restaurant) {
+    public Boolean isPossibleOnGivenDateAt(final Restaurant restaurant) {
         return restaurant.isRestaurantOpenOn(this.date.getDayOfWeek());
     }
 
@@ -76,7 +76,7 @@ public class Booking {
         return this.numberOfDiners + totalDiners;
     }
 
-    static Integer calculateTotalDinersOnGivenDate(final List<Booking> bookings) {
+    public static Integer calculateTotalDinersOnGivenDate(final List<Booking> bookings) {
         return bookings.stream()
             .mapToInt(booking -> booking.numberOfDiners)
             .sum();

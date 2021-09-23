@@ -1,5 +1,10 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.services;
 
+import com.jetbrains.bookingservice.views.BookingResponseView;
+import com.jetbrains.bookingservice.clients.RestaurantClient;
+import com.jetbrains.bookingservice.models.Booking;
+import com.jetbrains.bookingservice.models.Restaurant;
+import com.jetbrains.bookingservice.repositories.BookingRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,11 +47,11 @@ class BookingValidatorTest {
       Mockito.when(restaurantClient.getRestaurant(anyString())).thenReturn(null);
 
       // Action
-      BookingResponse bookingResponse = bookingValidator.validate(booking, restaurantId);
+      BookingResponseView bookingResponseView = bookingValidator.validate(booking, restaurantId);
 
       // Assert
-      assertEquals(HttpStatus.NOT_FOUND, bookingResponse.getHttpStatus());
-      assertEquals(true, bookingResponse.hasError());
+      assertEquals(HttpStatus.NOT_FOUND, bookingResponseView.getHttpStatus());
+      assertEquals(true, bookingResponseView.hasError());
     }
 
     @Test
@@ -64,11 +69,11 @@ class BookingValidatorTest {
       BookingValidator bookingValidator = new BookingValidator(bookingRepository, restaurantClient);
 
       // Action
-      BookingResponse bookingResponse = bookingValidator.validate(booking, restaurantId);
+      BookingResponseView bookingResponseView = bookingValidator.validate(booking, restaurantId);
 
       // Assert
-      assertEquals(HttpStatus.CONFLICT, bookingResponse.getHttpStatus());
-      assertEquals(true, bookingResponse.hasError());
+      assertEquals(HttpStatus.CONFLICT, bookingResponseView.getHttpStatus());
+      assertEquals(true, bookingResponseView.hasError());
     }
 
     @Test
@@ -86,11 +91,11 @@ class BookingValidatorTest {
       BookingValidator bookingValidator = new BookingValidator(bookingRepository, restaurantClient);
 
       // Action
-      BookingResponse bookingResponse = bookingValidator.validate(booking, restaurantId);
+      BookingResponseView bookingResponseView = bookingValidator.validate(booking, restaurantId);
 
       // Assert
-      assertEquals(HttpStatus.CONFLICT, bookingResponse.getHttpStatus());
-      assertEquals(true, bookingResponse.hasError());
+      assertEquals(HttpStatus.CONFLICT, bookingResponseView.getHttpStatus());
+      assertEquals(true, bookingResponseView.hasError());
     }
 
     @Test
@@ -110,11 +115,11 @@ class BookingValidatorTest {
       BookingValidator bookingValidator = new BookingValidator(bookingRepository, restaurantClient);
 
       // Action
-      BookingResponse bookingResponse = bookingValidator.validate(booking, restaurantId);
+      BookingResponseView bookingResponseView = bookingValidator.validate(booking, restaurantId);
 
       // Assert
-      assertEquals(HttpStatus.CONFLICT, bookingResponse.getHttpStatus());
-      assertEquals(true, bookingResponse.hasError());
+      assertEquals(HttpStatus.CONFLICT, bookingResponseView.getHttpStatus());
+      assertEquals(true, bookingResponseView.hasError());
     }
 
     @Test
@@ -134,10 +139,10 @@ class BookingValidatorTest {
       BookingValidator bookingValidator = new BookingValidator(bookingRepository, restaurantClient);
 
       // Action
-      BookingResponse bookingResponse = bookingValidator.validate(booking, restaurantId);
+      BookingResponseView bookingResponseView = bookingValidator.validate(booking, restaurantId);
 
       // Assert
-      assertNull(bookingResponse.getHttpStatus());
-      assertEquals(false, bookingResponse.hasError());
+      assertNull(bookingResponseView.getHttpStatus());
+      assertEquals(false, bookingResponseView.hasError());
     }
 }

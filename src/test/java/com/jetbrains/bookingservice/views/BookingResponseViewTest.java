@@ -1,5 +1,7 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.views;
 
+import com.jetbrains.bookingservice.models.Booking;
+import com.jetbrains.bookingservice.views.BookingResponseView;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +13,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class BookingResponseTest {
+class BookingResponseViewTest {
     @Test
     @DisplayName("Test hasError should return false")
     void testHasError_shouldReturnFalseWhenErrorMessageIsNull() {
@@ -20,10 +22,10 @@ class BookingResponseTest {
       LocalDate now = LocalDate.now();
       int numberOfDiners = 10;
       Booking booking = new Booking(restaurantId, now, numberOfDiners);
-      BookingResponse bookingResponse = new BookingResponse(booking, null, HttpStatus.CREATED);
+      BookingResponseView bookingResponseView = new BookingResponseView(booking, null, HttpStatus.CREATED);
 
       // Action & Assert
-      assertEquals(false, bookingResponse.hasError());
+      assertEquals(false, bookingResponseView.hasError());
     }
 
   @Test
@@ -34,10 +36,10 @@ class BookingResponseTest {
     LocalDate now = LocalDate.now();
     int numberOfDiners = 10;
     Booking booking = new Booking(restaurantId, now, numberOfDiners);
-    BookingResponse bookingResponse = new BookingResponse(booking, null, HttpStatus.CREATED);
+    BookingResponseView bookingResponseView = new BookingResponseView(booking, null, HttpStatus.CREATED);
 
     // Action & Assert
-    assertEquals(false, bookingResponse.hasError());
+    assertEquals(false, bookingResponseView.hasError());
   }
 
     @Test
@@ -48,10 +50,10 @@ class BookingResponseTest {
       LocalDate now = LocalDate.now();
       int numberOfDiners = 10;
       Booking booking = new Booking(restaurantId, now, numberOfDiners);
-      BookingResponse bookingResponse = new BookingResponse(booking, "I am error", HttpStatus.CONFLICT);
+      BookingResponseView bookingResponseView = new BookingResponseView(booking, "I am error", HttpStatus.CONFLICT);
 
       // Action & Assert
-      assertEquals(true, bookingResponse.hasError());
+      assertEquals(true, bookingResponseView.hasError());
     }
 
     @Test
@@ -62,10 +64,10 @@ class BookingResponseTest {
       LocalDate now = LocalDate.now();
       int numberOfDiners = 10;
       Booking booking = new Booking(restaurantId, now, numberOfDiners);
-      BookingResponse bookingResponse = new BookingResponse(booking, null, HttpStatus.CREATED);
+      BookingResponseView bookingResponseView = new BookingResponseView(booking, null, HttpStatus.CREATED);
 
       // Action & Assert
-      assertEquals(true, bookingResponse.isErrorMessageEqualTo(null));
+      assertEquals(true, bookingResponseView.isErrorMessageEqualTo(null));
     }
 
     @Test
@@ -76,9 +78,9 @@ class BookingResponseTest {
       LocalDate now = LocalDate.now();
       int numberOfDiners = 10;
       Booking booking = new Booking(restaurantId, now, numberOfDiners);
-      BookingResponse bookingResponse = new BookingResponse(booking, "I am error", HttpStatus.CONFLICT);
+      BookingResponseView bookingResponseView = new BookingResponseView(booking, "I am error", HttpStatus.CONFLICT);
 
       // Action & Assert
-      assertEquals(false, bookingResponse.isErrorMessageEqualTo("I am not error"));
+      assertEquals(false, bookingResponseView.isErrorMessageEqualTo("I am not error"));
     }
 }

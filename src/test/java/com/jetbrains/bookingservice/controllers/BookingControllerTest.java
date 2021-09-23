@@ -1,5 +1,8 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.controllers;
 
+import com.jetbrains.bookingservice.views.BookingResponseView;
+import com.jetbrains.bookingservice.models.Booking;
+import com.jetbrains.bookingservice.services.BookingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,15 +31,15 @@ class BookingControllerTest {
         int numberOfDiners = 10;
         Booking booking = new Booking(restaurantId, now, numberOfDiners);
         Mockito.when(bookingService.createBooking(any(), anyString()))
-            .thenReturn(new BookingResponse(booking, null, HttpStatus.CREATED));
+            .thenReturn(new BookingResponseView(booking, null, HttpStatus.CREATED));
         Booking newBooking = new Booking(restaurantId, now, numberOfDiners);
 
         // Action
-        BookingResponse bookingResponse = bookingController.createBooking(newBooking, restaurantId);
+        BookingResponseView bookingResponseView = bookingController.createBooking(newBooking, restaurantId);
 
         // Assert
-        assertEquals(HttpStatus.CREATED, bookingResponse.getHttpStatus());
-        assertEquals(false, bookingResponse.hasError());
+        assertEquals(HttpStatus.CREATED, bookingResponseView.getHttpStatus());
+        assertEquals(false, bookingResponseView.hasError());
     }
 
     @Test
@@ -48,18 +51,18 @@ class BookingControllerTest {
         LocalDate now = LocalDate.now();
         int numberOfDiners = 10;
         String expectedErrorMessage = "Number of diners exceeds available restaurant capacity";
-        BookingResponse expectedBookingResponse = new BookingResponse(expectedErrorMessage
+        BookingResponseView expectedBookingResponseView = new BookingResponseView(expectedErrorMessage
             , HttpStatus.CONFLICT);
-        Mockito.when(bookingService.createBooking(any(), anyString())).thenReturn(expectedBookingResponse);
+        Mockito.when(bookingService.createBooking(any(), anyString())).thenReturn(expectedBookingResponseView);
         Booking newBooking = new Booking(restaurantId, now, numberOfDiners);
 
         // Action
-        BookingResponse actualBookingResponse = bookingController.createBooking(newBooking, restaurantId);
+        BookingResponseView actualBookingResponseView = bookingController.createBooking(newBooking, restaurantId);
 
         // Assert
-        assertEquals(HttpStatus.CONFLICT, actualBookingResponse.getHttpStatus());
-        assertEquals(true, actualBookingResponse.hasError());
-        assertEquals(true, actualBookingResponse.isErrorMessageEqualTo(expectedErrorMessage));
+        assertEquals(HttpStatus.CONFLICT, actualBookingResponseView.getHttpStatus());
+        assertEquals(true, actualBookingResponseView.hasError());
+        assertEquals(true, actualBookingResponseView.isErrorMessageEqualTo(expectedErrorMessage));
     }
 
     @Test
@@ -72,15 +75,15 @@ class BookingControllerTest {
         int numberOfDiners = 10;
         Booking expectedBooking = new Booking(restaurantId, now, numberOfDiners);
         List<Booking> bookings = singletonList(expectedBooking);
-        BookingResponse expectedBookingResponse = new BookingResponse(bookings, null, HttpStatus.OK);
-        Mockito.when(bookingService.getBookingsForRestaurant(anyString())).thenReturn(expectedBookingResponse);
+        BookingResponseView expectedBookingResponseView = new BookingResponseView(bookings, null, HttpStatus.OK);
+        Mockito.when(bookingService.getBookingsForRestaurant(anyString())).thenReturn(expectedBookingResponseView);
 
         // Action
-        BookingResponse actualBookingResponse = bookingController.getBookingsForRestaurant(restaurantId);
+        BookingResponseView actualBookingResponseView = bookingController.getBookingsForRestaurant(restaurantId);
 
         // Assert
-        assertEquals(HttpStatus.OK, actualBookingResponse.getHttpStatus());
-        assertEquals(false, actualBookingResponse.hasError());
+        assertEquals(HttpStatus.OK, actualBookingResponseView.getHttpStatus());
+        assertEquals(false, actualBookingResponseView.hasError());
     }
 
     @Test
@@ -93,14 +96,14 @@ class BookingControllerTest {
         int numberOfDiners = 10;
         Booking expectedBooking = new Booking(restaurantId, now, numberOfDiners);
         List<Booking> bookings = singletonList(expectedBooking);
-        BookingResponse expectedBookingResponse = new BookingResponse(bookings, null, HttpStatus.OK);
-        Mockito.when(bookingService.findAllByRestaurantIdAndDate(anyString(), any())).thenReturn(expectedBookingResponse);
+        BookingResponseView expectedBookingResponseView = new BookingResponseView(bookings, null, HttpStatus.OK);
+        Mockito.when(bookingService.findAllByRestaurantIdAndDate(anyString(), any())).thenReturn(expectedBookingResponseView);
 
         // Action
-        BookingResponse actualBookingResponse = bookingController.getBookingsForRestaurantByDate(restaurantId, now);
+        BookingResponseView actualBookingResponseView = bookingController.getBookingsForRestaurantByDate(restaurantId, now);
 
         // Assert
-        assertEquals(HttpStatus.OK, actualBookingResponse.getHttpStatus());
-        assertEquals(false, actualBookingResponse.hasError());
+        assertEquals(HttpStatus.OK, actualBookingResponseView.getHttpStatus());
+        assertEquals(false, actualBookingResponseView.hasError());
     }
 }

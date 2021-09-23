@@ -1,5 +1,8 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.services;
 
+import com.jetbrains.bookingservice.views.BookingResponseView;
+import com.jetbrains.bookingservice.models.Booking;
+import com.jetbrains.bookingservice.repositories.BookingRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,11 +37,11 @@ class BookingServiceTest {
           .thenReturn(singletonList(booking));
 
       // Action
-      BookingResponse bookingResponse = bookingService.getBookingsForRestaurant(restaurantId);
+      BookingResponseView bookingResponseView = bookingService.getBookingsForRestaurant(restaurantId);
 
       // Assert
-      assertEquals(HttpStatus.OK, bookingResponse.getHttpStatus());
-      assertEquals(false, bookingResponse.hasError());
+      assertEquals(HttpStatus.OK, bookingResponseView.getHttpStatus());
+      assertEquals(false, bookingResponseView.hasError());
     }
 
     @Test
@@ -50,15 +53,15 @@ class BookingServiceTest {
       String restaurantId = "2";
       int numberOfDiners = 10;
       Booking newBooking = new Booking(restaurantId, date, numberOfDiners);
-      BookingResponse bookingResponse = new BookingResponse(newBooking, "Error error", HttpStatus.CONFLICT);
-      Mockito.when(bookingValidator.validate(any(), anyString())).thenReturn(bookingResponse);
+      BookingResponseView bookingResponseView = new BookingResponseView(newBooking, "Error error", HttpStatus.CONFLICT);
+      Mockito.when(bookingValidator.validate(any(), anyString())).thenReturn(bookingResponseView);
 
       // Action
-      BookingResponse actualBookingResponse = bookingService.createBooking(newBooking, restaurantId);
+      BookingResponseView actualBookingResponseView = bookingService.createBooking(newBooking, restaurantId);
 
       // Assert
-      assertEquals(HttpStatus.CONFLICT, actualBookingResponse.getHttpStatus());
-      assertEquals(true, actualBookingResponse.hasError());
+      assertEquals(HttpStatus.CONFLICT, actualBookingResponseView.getHttpStatus());
+      assertEquals(true, actualBookingResponseView.hasError());
     }
 
     @Test
@@ -70,16 +73,16 @@ class BookingServiceTest {
       String restaurantId = "2";
       int numberOfDiners = 10;
       Booking newBooking = new Booking(restaurantId, date, numberOfDiners);
-      BookingResponse bookingResponse = new BookingResponse(newBooking, null, null);
-      Mockito.when(bookingValidator.validate(any(), anyString())).thenReturn(bookingResponse);
+      BookingResponseView bookingResponseView = new BookingResponseView(newBooking, null, null);
+      Mockito.when(bookingValidator.validate(any(), anyString())).thenReturn(bookingResponseView);
       Mockito.when(bookingRepository.save(any())).thenReturn(newBooking);
 
       // Action
-      BookingResponse actualBookingResponse = bookingService.createBooking(newBooking, restaurantId);
+      BookingResponseView actualBookingResponseView = bookingService.createBooking(newBooking, restaurantId);
 
       // Assert
-      assertEquals(HttpStatus.CREATED, actualBookingResponse.getHttpStatus());
-      assertEquals(false, actualBookingResponse.hasError());
+      assertEquals(HttpStatus.CREATED, actualBookingResponseView.getHttpStatus());
+      assertEquals(false, actualBookingResponseView.hasError());
     }
 
     @Test
@@ -94,11 +97,11 @@ class BookingServiceTest {
       Mockito.when(bookingRepository.findAllByRestaurantIdAndDate(anyString(), any())).thenReturn(singletonList(booking));
 
       // Action
-      BookingResponse actualBookingResponse = bookingService.findAllByRestaurantIdAndDate(restaurantId, date);
+      BookingResponseView actualBookingResponseView = bookingService.findAllByRestaurantIdAndDate(restaurantId, date);
 
       // Assert
-      assertEquals(HttpStatus.OK, actualBookingResponse.getHttpStatus());
-      assertEquals(false, actualBookingResponse.hasError());
+      assertEquals(HttpStatus.OK, actualBookingResponseView.getHttpStatus());
+      assertEquals(false, actualBookingResponseView.hasError());
     }
 
     @Test
@@ -111,10 +114,10 @@ class BookingServiceTest {
       Mockito.when(bookingRepository.findAllByRestaurantIdAndDate(anyString(), any())).thenReturn(Collections.EMPTY_LIST);
 
       // Action
-      BookingResponse actualBookingResponse = bookingService.findAllByRestaurantIdAndDate(restaurantId, date);
+      BookingResponseView actualBookingResponseView = bookingService.findAllByRestaurantIdAndDate(restaurantId, date);
 
       // Assert
-      assertEquals(HttpStatus.NOT_FOUND, actualBookingResponse.getHttpStatus());
-      assertEquals(true, actualBookingResponse.hasError());
+      assertEquals(HttpStatus.NOT_FOUND, actualBookingResponseView.getHttpStatus());
+      assertEquals(true, actualBookingResponseView.hasError());
     }
 }

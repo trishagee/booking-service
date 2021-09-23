@@ -1,4 +1,4 @@
-package com.jetbrains.test;
+package com.jetbrains.bookingservice;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;

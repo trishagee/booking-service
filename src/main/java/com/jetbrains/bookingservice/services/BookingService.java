@@ -1,5 +1,8 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.services;
 
+import com.jetbrains.bookingservice.repositories.BookingRepository;
+import com.jetbrains.bookingservice.views.BookingResponseView;
+import com.jetbrains.bookingservice.models.Booking;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -18,32 +21,32 @@ public class BookingService {
       this.bookingValidator = bookingValidator;
   }
 
-    public BookingResponse getBookingsForRestaurant(final String restaurantId) {
+    public BookingResponseView getBookingsForRestaurant(final String restaurantId) {
       List<Booking> bookings = bookingRepository.findAllByRestaurantId(restaurantId);
 
       if (bookings == null || bookings.isEmpty()) {
-        return new BookingResponse(bookings, "Bookings not found for a given restaurant", HttpStatus.NOT_FOUND);
+        return new BookingResponseView(bookings, "Bookings not found for a given restaurant", HttpStatus.NOT_FOUND);
       }
-      return new BookingResponse(bookings, null, HttpStatus.OK);
+      return new BookingResponseView(bookings, null, HttpStatus.OK);
     }
 
-    public BookingResponse findAllByRestaurantIdAndDate(String restaurantId, LocalDate date) {
+    public BookingResponseView findAllByRestaurantIdAndDate(String restaurantId, LocalDate date) {
     List<Booking> bookings = bookingRepository.findAllByRestaurantIdAndDate(restaurantId, date);
 
     if (bookings == null || bookings.isEmpty()) {
-      return new BookingResponse(bookings, "Bookings not found for a given restaurant at given time", HttpStatus.NOT_FOUND);
+      return new BookingResponseView(bookings, "Bookings not found for a given restaurant at given time", HttpStatus.NOT_FOUND);
     }
 
-    return new BookingResponse(bookings, null, HttpStatus.OK);
+    return new BookingResponseView(bookings, null, HttpStatus.OK);
   }
 
-    public BookingResponse createBooking(final Booking booking, final String restaurantId) {
+    public BookingResponseView createBooking(final Booking booking, final String restaurantId) {
       var bookingResponse = bookingValidator.validate(booking, restaurantId);
 
       if (TRUE.equals(bookingResponse.hasError())) {
         return bookingResponse;
       }
 
-      return new BookingResponse(bookingRepository.save(booking), null, HttpStatus.CREATED);
+      return new BookingResponseView(bookingRepository.save(booking), null, HttpStatus.CREATED);
     }
 }

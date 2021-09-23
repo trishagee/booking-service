@@ -1,5 +1,6 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.repositories;
 
+import com.jetbrains.bookingservice.models.Booking;
 import org.springframework.data.repository.CrudRepository;
 
 import java.time.LocalDate;

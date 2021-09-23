@@ -1,6 +1,8 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.clients;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jetbrains.bookingservice.clients.RestaurantClient;
+import com.jetbrains.bookingservice.models.Restaurant;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

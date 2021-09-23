@@ -1,5 +1,8 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.controllers;
 
+import com.jetbrains.bookingservice.views.BookingResponseView;
+import com.jetbrains.bookingservice.models.Booking;
+import com.jetbrains.bookingservice.services.BookingService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,18 +21,18 @@ public class BookingController {
     }
 
     @GetMapping("/restaurants/{restaurantId}/bookings")
-    public BookingResponse getBookingsForRestaurant(@PathVariable String restaurantId) {
+    public BookingResponseView getBookingsForRestaurant(@PathVariable String restaurantId) {
         return bookingService.getBookingsForRestaurant(restaurantId);
     }
 
     @GetMapping("/restaurants/{restaurantId}/bookings/{date}")
-    public BookingResponse getBookingsForRestaurantByDate(@PathVariable String restaurantId,
-                                                        @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    public BookingResponseView getBookingsForRestaurantByDate(@PathVariable String restaurantId,
+                                                              @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         return bookingService.findAllByRestaurantIdAndDate(restaurantId, date);
     }
 
     @PostMapping("/restaurants/{restaurantId}/bookings")
-    public BookingResponse createBooking(@RequestBody Booking booking, @PathVariable String restaurantId) {
+    public BookingResponseView createBooking(@RequestBody Booking booking, @PathVariable String restaurantId) {
         return bookingService.createBooking(booking, restaurantId);
     }
 }

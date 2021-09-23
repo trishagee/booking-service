@@ -1,11 +1,11 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.models;
 
 import java.time.DayOfWeek;
 import java.util.Set;
 
 public record Restaurant(String id, Integer capacity, Set<DayOfWeek> openingDays) {
 
-    Boolean isCapacityLessThanNumberOfDinersIn(final Booking booking) {
+    public Boolean isCapacityLessThanNumberOfDinersIn(final Booking booking) {
       return booking.isNumberOfDinersMoreThanGivenCapacity(this.capacity);
     }
 
@@ -13,7 +13,7 @@ public record Restaurant(String id, Integer capacity, Set<DayOfWeek> openingDays
       return this.openingDays.contains(dayOfWeek);
     }
 
-    Boolean isBookingPossibleForGiven(final Booking booking, final Integer totalDinersOnThisDay) {
+    public Boolean isBookingPossibleForGiven(final Booking booking, final Integer totalDinersOnThisDay) {
       return (booking.getSumOfBookingDinersAnd(totalDinersOnThisDay)) <= this.capacity;
     }
 }

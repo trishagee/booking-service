@@ -1,5 +1,6 @@
-package com.jetbrains.bookingservice;
+package com.jetbrains.bookingservice.clients;
 
+import com.jetbrains.bookingservice.models.Restaurant;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
