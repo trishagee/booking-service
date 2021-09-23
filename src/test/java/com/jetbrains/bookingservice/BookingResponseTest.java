@@ -14,17 +14,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class BookingResponseTest {
     @Test
     @DisplayName("Test hasError should return false")
-    void testHasError_shouldReturnFalse() {
+    void testHasError_shouldReturnFalseWhenErrorMessageIsNull() {
       // Arrange
       String restaurantId = "2";
       LocalDate now = LocalDate.now();
       int numberOfDiners = 10;
       Booking booking = new Booking(restaurantId, now, numberOfDiners);
-      BookingResponse bookingResponse = new BookingResponse(booking, "", HttpStatus.CREATED);
+      BookingResponse bookingResponse = new BookingResponse(booking, null, HttpStatus.CREATED);
 
       // Action & Assert
       assertEquals(false, bookingResponse.hasError());
     }
+
+  @Test
+  @DisplayName("Test hasError should return false")
+  void testHasError_shouldReturnFalseWhenErrorMessageIsEmptyString() {
+    // Arrange
+    String restaurantId = "2";
+    LocalDate now = LocalDate.now();
+    int numberOfDiners = 10;
+    Booking booking = new Booking(restaurantId, now, numberOfDiners);
+    BookingResponse bookingResponse = new BookingResponse(booking, null, HttpStatus.CREATED);
+
+    // Action & Assert
+    assertEquals(false, bookingResponse.hasError());
+  }
 
     @Test
     @DisplayName("Test hasError should return true")
@@ -48,10 +62,10 @@ class BookingResponseTest {
       LocalDate now = LocalDate.now();
       int numberOfDiners = 10;
       Booking booking = new Booking(restaurantId, now, numberOfDiners);
-      BookingResponse bookingResponse = new BookingResponse(booking, "", HttpStatus.CREATED);
+      BookingResponse bookingResponse = new BookingResponse(booking, null, HttpStatus.CREATED);
 
       // Action & Assert
-      assertEquals(true, bookingResponse.isErrorMessageEqualTo(""));
+      assertEquals(true, bookingResponse.isErrorMessageEqualTo(null));
     }
 
     @Test

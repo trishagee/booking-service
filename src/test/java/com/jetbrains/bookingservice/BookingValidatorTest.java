@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Set;
 
 import static java.time.DayOfWeek.FRIDAY;
@@ -27,6 +28,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class BookingValidatorTest {
+    private static final LocalDate date = LocalDate.of(2021, Month.SEPTEMBER, 18);
+
     @Test
     @DisplayName("Test validate should return not found error when restaurant was not present in DB")
     void testValidate_shouldReturnNotFoundErrorWhenRestaurantIsNotPresent(@Mock BookingRepository bookingRepository,
@@ -34,9 +37,8 @@ class BookingValidatorTest {
       // Arrange
       BookingValidator bookingValidator = new BookingValidator(bookingRepository, restaurantClient);
       String restaurantId = "2";
-      LocalDate now = LocalDate.now();
       int numberOfDiners = 10;
-      Booking booking = new Booking(restaurantId, now, numberOfDiners);
+      Booking booking = new Booking(restaurantId, date, numberOfDiners);
       Mockito.when(restaurantClient.getRestaurant(anyString())).thenReturn(null);
 
       // Action
@@ -53,9 +55,8 @@ class BookingValidatorTest {
                                                                 @Mock RestaurantClient restaurantClient) {
       // Arrange
       String restaurantId = "2";
-      LocalDate now = LocalDate.now();
       int numberOfDiners = 11;
-      Booking booking = new Booking(restaurantId, now, numberOfDiners);
+      Booking booking = new Booking(restaurantId, date, numberOfDiners);
       int capacity = 10;
       Set<DayOfWeek> dayOfWeeks = Set.of(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY);
       Restaurant restaurant = new Restaurant(restaurantId, capacity, dayOfWeeks);
@@ -76,9 +77,8 @@ class BookingValidatorTest {
                                                           @Mock RestaurantClient restaurantClient) {
       // Arrange
       String restaurantId = "2";
-      LocalDate now = LocalDate.now();
       int numberOfDiners = 10;
-      Booking booking = new Booking(restaurantId, now, numberOfDiners);
+      Booking booking = new Booking(restaurantId, date, numberOfDiners);
       int capacity = 10;
       Set<DayOfWeek> dayOfWeeks = Set.of(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SUNDAY);
       Restaurant restaurant = new Restaurant(restaurantId, capacity, dayOfWeeks);
@@ -99,9 +99,8 @@ class BookingValidatorTest {
                                                           @Mock RestaurantClient restaurantClient) {
       // Arrange
       String restaurantId = "2";
-      LocalDate now = LocalDate.now();
       int numberOfDiners = 5;
-      Booking booking = new Booking(restaurantId, now, numberOfDiners);
+      Booking booking = new Booking(restaurantId, date, numberOfDiners);
       int capacity = 9;
       Set<DayOfWeek> dayOfWeeks = Set.of(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY);
       Restaurant restaurant = new Restaurant(restaurantId, capacity, dayOfWeeks);
@@ -124,9 +123,8 @@ class BookingValidatorTest {
                                                                      @Mock RestaurantClient restaurantClient) {
       // Arrange
       String restaurantId = "2";
-      LocalDate now = LocalDate.now();
       int numberOfDiners = 4;
-      Booking booking = new Booking(restaurantId, now, numberOfDiners);
+      Booking booking = new Booking(restaurantId, date, numberOfDiners);
       int capacity = 9;
       Set<DayOfWeek> dayOfWeeks = Set.of(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY);
       Restaurant restaurant = new Restaurant(restaurantId, capacity, dayOfWeeks);

@@ -6,12 +6,18 @@ import java.util.Objects;
 
 public class BookingResponse {
     private final Object data;
-    private final String errorMessage;
     private final HttpStatus httpStatus;
+    private final String errorMessage;
 
-    private static final String EMPTY_STRING = "";
+    public Object getData() {
+      return data;
+    }
 
-    public BookingResponse(String errorMessage, HttpStatus httpStatus) {
+    public HttpStatus getHttpStatus() {
+      return httpStatus;
+    }
+
+  public BookingResponse(String errorMessage, HttpStatus httpStatus) {
       this.data = null;
       this.errorMessage = errorMessage;
       this.httpStatus = httpStatus;
@@ -24,11 +30,7 @@ public class BookingResponse {
     }
 
     public Boolean hasError() {
-      return !EMPTY_STRING.equals(errorMessage);
-    }
-
-    public HttpStatus getHttpStatus() {
-      return httpStatus;
+      return errorMessage != null && !errorMessage.isEmpty();
     }
 
     public Boolean isErrorMessageEqualTo(String giveMessage){

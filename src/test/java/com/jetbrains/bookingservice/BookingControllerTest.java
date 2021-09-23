@@ -28,7 +28,7 @@ class BookingControllerTest {
         int numberOfDiners = 10;
         Booking booking = new Booking(restaurantId, now, numberOfDiners);
         Mockito.when(bookingService.createBooking(any(), anyString()))
-            .thenReturn(new BookingResponse(booking, "", HttpStatus.CREATED));
+            .thenReturn(new BookingResponse(booking, null, HttpStatus.CREATED));
         Booking newBooking = new Booking(restaurantId, now, numberOfDiners);
 
         // Action
@@ -72,11 +72,32 @@ class BookingControllerTest {
         int numberOfDiners = 10;
         Booking expectedBooking = new Booking(restaurantId, now, numberOfDiners);
         List<Booking> bookings = singletonList(expectedBooking);
-        BookingResponse expectedBookingResponse = new BookingResponse(bookings, "", HttpStatus.OK);
+        BookingResponse expectedBookingResponse = new BookingResponse(bookings, null, HttpStatus.OK);
         Mockito.when(bookingService.getBookingsForRestaurant(anyString())).thenReturn(expectedBookingResponse);
 
         // Action
         BookingResponse actualBookingResponse = bookingController.getBookingsForRestaurant(restaurantId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, actualBookingResponse.getHttpStatus());
+        assertEquals(false, actualBookingResponse.hasError());
+    }
+
+    @Test
+    @DisplayName("Test getBookingsForRestaurantByDate should return booking list for a given restaurant id and date")
+    void testGetBookingsForRestaurantByDate_shouldReturnBookingListForARestaurantAndGivenDate(@Mock BookingService bookingService) {
+        // Arrange
+        BookingController bookingController = new BookingController(bookingService);
+        String restaurantId = "2";
+        LocalDate now = LocalDate.now();
+        int numberOfDiners = 10;
+        Booking expectedBooking = new Booking(restaurantId, now, numberOfDiners);
+        List<Booking> bookings = singletonList(expectedBooking);
+        BookingResponse expectedBookingResponse = new BookingResponse(bookings, null, HttpStatus.OK);
+        Mockito.when(bookingService.findAllByRestaurantIdAndDate(anyString(), any())).thenReturn(expectedBookingResponse);
+
+        // Action
+        BookingResponse actualBookingResponse = bookingController.getBookingsForRestaurantByDate(restaurantId, now);
 
         // Assert
         assertEquals(HttpStatus.OK, actualBookingResponse.getHttpStatus());

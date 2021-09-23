@@ -41,6 +41,6 @@ public class BookingValidator {
         return new BookingResponse("Restaurant all booked up!", HttpStatus.CONFLICT);
       }
 
-      return new BookingResponse(booking, "", null);
+      return new BookingResponse(booking, null, null);
     }
 }

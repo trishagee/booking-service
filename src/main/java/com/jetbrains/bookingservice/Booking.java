@@ -23,6 +23,10 @@ public class Booking {
         this.numberOfDiners = numberOfDiners;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public LocalDate getDate() {
         return this.date;
     }

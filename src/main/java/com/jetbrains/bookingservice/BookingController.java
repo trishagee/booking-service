@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 public class BookingController {
@@ -24,9 +23,9 @@ public class BookingController {
     }
 
     @GetMapping("/restaurants/{restaurantId}/bookings/{date}")
-    public List<Booking> getBookingsForRestaurantByDate(@PathVariable String restaurantId,
+    public BookingResponse getBookingsForRestaurantByDate(@PathVariable String restaurantId,
                                                         @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
-        return repository.findAllByRestaurantIdAndDate(restaurantId, date);
+        return bookingService.findAllByRestaurantIdAndDate(restaurantId, date);
     }
 
     @PostMapping("/restaurants/{restaurantId}/bookings")
