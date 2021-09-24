@@ -13,17 +13,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
 import static java.time.DayOfWeek.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -60,11 +63,7 @@ public class BookingServiceIntegrationTest {
         Booking booking = new Booking(RESTAURANT_ID, LocalDate.of(2021, 4, 26), 4);
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
-                                             .contentType("application/json")
-                                             .content(objectMapper.writeValueAsString(booking)))
-                                     .andExpect(status().isOk())
-                                     .andReturn();
+        MvcResult mvcResult = postBookingAsJson(booking, RESTAURANT_ID);
         Booking returnedBooking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Booking.class);
 
         // then
@@ -86,11 +85,7 @@ public class BookingServiceIntegrationTest {
 
         // when
         Booking newBooking = new Booking(RESTAURANT_ID, LocalDate.of(2021, 4, 26), 4);
-        mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
-                       .contentType("application/json")
-                       .content(objectMapper.writeValueAsString(newBooking)))
-               .andExpect(status().isConflict())
-               .andExpect(status().reason("NoAvailableCapacityException"));
+        postBookingAndExpectError(newBooking, status().isConflict(), "NoAvailableCapacityException");
     }
 
     @Test
@@ -104,11 +99,7 @@ public class BookingServiceIntegrationTest {
         Booking booking = new Booking(RESTAURANT_ID, LocalDate.of(2021, 4, 24), 4);
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
-                                             .contentType("application/json")
-                                             .content(objectMapper.writeValueAsString(booking)))
-                                     .andExpect(status().isOk())
-                                     .andReturn();
+        MvcResult mvcResult = postBookingAsJson(booking, RESTAURANT_ID);
         Booking returnedBooking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Booking.class);
 
         // then
@@ -130,11 +121,7 @@ public class BookingServiceIntegrationTest {
         Booking booking = new Booking(restaurantId, LocalDate.of(2021, 4, 27), 15);
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/restaurants/{restaurantId}/bookings", restaurantId)
-                                             .contentType("application/json")
-                                             .content(objectMapper.writeValueAsString(booking)))
-                                     .andExpect(status().isOk())
-                                     .andReturn();
+        MvcResult mvcResult = postBookingAsJson(booking, restaurantId);
         Booking returnedBooking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Booking.class);
 
         // then
@@ -168,20 +155,20 @@ public class BookingServiceIntegrationTest {
                .andExpect(jsonPath("$[2].numberOfDiners").value(11));
     }
 
-    @Test
-    @DisplayName("Should get a list of bookings by date")
-    void shouldGetAListOfBookingsByDate() throws Exception {
-        // given
-        bookingRepository.save(new Booking(RESTAURANT_ID, LocalDate.of(2021, 9, 12), 5));
-        bookingRepository.save(new Booking(RESTAURANT_ID, LocalDate.of(2021, 9, 13), 7));
-        bookingRepository.save(new Booking(RESTAURANT_ID, LocalDate.of(2021, 9, 14), 11));
+    private MvcResult postBookingAsJson(Booking booking, String restaurantId) throws Exception {
+        return mockMvc.perform(post("/restaurants/{restaurantId}/bookings", restaurantId)
+                                       .contentType("application/json")
+                                       .content(objectMapper.writeValueAsString(booking)))
+                      .andExpect(status().isOk())
+                      .andReturn();
+    }
 
-        // when
-        mockMvc.perform(get("/restaurants/{restaurantId}/bookings/2021-09-13", RESTAURANT_ID))
-               .andExpect(jsonPath("$[0].id").exists())
-               .andExpect(jsonPath("$[0].restaurantId").value(RESTAURANT_ID))
-               .andExpect(jsonPath("$[0].date").value("2021-09-13"))
-               .andExpect(jsonPath("$[0].numberOfDiners").value(7));
+    private void postBookingAndExpectError(Booking newBooking, ResultMatcher status, String statusReason) throws Exception {
+        mockMvc.perform(post("/restaurants/{restaurantId}/bookings", RESTAURANT_ID)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(newBooking)))
+               .andExpect(status)
+               .andExpect(status().reason(statusReason));
     }
 
     private void assertActualVsExpectedBooking(final Booking expected, final Booking actual) {
