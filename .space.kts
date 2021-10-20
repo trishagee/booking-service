@@ -33,7 +33,7 @@ job("Build and publish BookingService container") {
             labels["vendor"] = "JetBrains"
         }
 
-        push("registry.jetbrains.team/p/blossom/containers/booking-service") {
+        push("demo.registry.jetbrains.space/p/blossom/containers/booking-service") {
             tags(containerTagVersion)
         }
     }
