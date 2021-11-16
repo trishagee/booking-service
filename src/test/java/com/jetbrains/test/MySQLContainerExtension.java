@@ -11,7 +11,8 @@ public class MySQLContainerExtension implements BeforeAllCallback, AfterAllCallb
     private MySQLContainer mySQLContainer;
 
     private boolean isSpaceAutomation() {
-        return System.getenv("JB_SPACE_API_URL") != null;
+        return System.getenv("JB_SPACE_API_URL") != null // Space Automation...
+                && System.getenv("CWM_BUILTIN_SERVER_EXPOSED") == null; // ...but not Dev Environments
     }
 
     @Override
