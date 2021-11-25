@@ -38,3 +38,18 @@ job("Build and publish BookingService container") {
         }
     }
 }
+
+job("Dev Environment Warmup") {
+    startOn {
+        schedule { cron("0 5 * * *") }
+    }
+
+    git {
+        depth = UNLIMITED_DEPTH
+        refSpec = "refs/*:refs/*"
+    }
+
+    warmup(ide = Ide.IJGateway) {
+        scriptLocation = "./dev-env-warmup.sh"
+    }
+}
