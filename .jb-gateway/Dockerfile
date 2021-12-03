@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y apt-utils apt-transport-https
 
 RUN apt-get install -y \
   # Utilities \
-  curl unzip wget software-properties-common socat man-db gnupg2 pass \
+  curl unzip wget software-properties-common socat man-db gnupg2 pass lsof \
   # VCS \
   git \
   # JVM \
