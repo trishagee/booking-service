@@ -5,4 +5,16 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("com.gradle.enterprise") version("3.14.1")
+}
+
 rootProject.name = 'BookingService'
+
+gradleEnterprise {
+    server = 'https://18.212.219.143.nip.io'
+    allowUntrustedServer = true
+    buildScan {
+        publishAlways()
+    }
+}
