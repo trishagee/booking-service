@@ -7,9 +7,10 @@ on:
     branches: [ "main" ]
 
 jobs:
-  CI:
+  build:
 
     runs-on: ubuntu-latest
+    environment: CI
     permissions:
       contents: read
 
