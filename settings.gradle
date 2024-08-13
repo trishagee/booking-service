@@ -1,1 +1,9 @@
+plugins {
+    id "com.gradle.develocity" version "3.17.6"
+}
+
+develocity {
+    server = "https://dpeuniversity-develocity.gradle.com/"
+}
+
 rootProject.name = 'BookingService'
