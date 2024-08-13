@@ -1,9 +1,10 @@
-//plugins {
-//    id "com.gradle.develocity" version "3.17.6"
-//}
-//
-//develocity {
-//    server = "https://dpeuniversity-develocity.gradle.com/"
-//}
-//
+plugins {
+    id "com.gradle.develocity" version "3.17.6"
+    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.0.2"
+}
+
+develocity {
+    server = "https://dpeuniversity-develocity.gradle.com/"
+}
+
 rootProject.name = 'BookingService'
