@@ -30,6 +30,7 @@ jobs:
         develocity-url: https://dpeuniversity-develocity.gradle.com
         develocity-plugin-version: 3.17.6
         develocity-access-key: ${{ secrets.MY_DEVELOCITY_ACCESS_KEY }}
+        develocity-ccud-plugin-version: 2.0.2
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
