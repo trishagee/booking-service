@@ -12,13 +12,17 @@ repositories {
     maven { url 'https://repo.spring.io/milestone' }
 }
 
-jar {
+bootJar {
     archiveFileName = 'BookingService.jar'
+}
+
+jar {
+    enabled = false
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
